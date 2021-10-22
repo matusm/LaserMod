@@ -1,0 +1,79 @@
+﻿using At.Matus.StatisticPod;
+using System;
+
+namespace LaserMod
+{
+    public class MovingFitter
+    {
+
+        public double ModulationDepthLSQ => spMppLSQ.AverageValue;
+        public double ModulationDepthDispersionLSQ => spMppLSQ.StandardDeviation;
+        public double ModulationDepth => spMppFromStat.AverageValue;
+        public double ModulationDepthDispersion => spMppFromStat.StandardDeviation;
+        public double MModulationDepthRMS => Math.Sqrt(spMppFromStatRMS.AverageValue);
+        public double ModulationFrequency => spModulationFrequency.AverageValue;
+        public double ModulationFrequencyDispersion => spModulationFrequency.StandardDeviation;
+        public double ModulationPeriod => spTau.AverageValue;
+        public double ModulationPeriodDispersion => spTau.StandardDeviation;
+        public double BeatFrequency => spCarrierFromStat.AverageValue;
+        public double BeatFrequencyDispersion => spCarrierFromStat.StandardDeviation;
+        public double BeatFrequencyLSQ => spCarrierLSQ.AverageValue;
+        public double BeatFrequencyDispersionLSQ => spCarrierLSQ.StandardDeviation;
+        public long NumberOfWindows => spCarrierLSQ.SampleSize;
+
+
+        public MovingFitter(int[] counterData)
+        {
+            this.counterData = counterData;
+            spMppFromStat = new StatisticPod("Mpp statistic");
+            spMppFromStatRMS = new StatisticPod("Mpp statistic RMS");
+            spMppLSQ = new StatisticPod("Mpp LSQ");   
+            spCarrierLSQ = new StatisticPod("carrier LSQ");
+            spCarrierFromStat = new StatisticPod("carrier statistic");
+            spTau = new StatisticPod("mdulation period");
+            spModulationFrequency = new StatisticPod("modulation frequency");
+        }
+
+        public void FitWithWindowSize(int windowSize)
+        {
+            var sineFitter = new SineFitter();
+            spMppFromStat.Restart();
+            spMppFromStatRMS.Restart();
+            spCarrierFromStat.Restart();
+            spMppLSQ.Restart();
+            spCarrierLSQ.Restart();
+            spTau.Restart();
+            spModulationFrequency.Restart();
+
+            double[] window = new double[windowSize];
+            int runningIndex = 0;
+            int indexIncrement = windowSize;
+            //int indexIncrement = 1; // actual moving average, slow!
+            while (runningIndex + windowSize < counterData.Length)
+            {
+                for (int i = 0; i < windowSize; i++)
+                    window[i] = counterData[runningIndex + i];
+                sineFitter.EstimateParametersFrom(window);
+                spMppFromStat.Update(sineFitter.FrequencyDeviationFromStatistics);
+                spMppFromStatRMS.Update(sineFitter.FrequencyDeviationFromStatistics * sineFitter.FrequencyDeviationFromStatistics);
+                spCarrierFromStat.Update(sineFitter.CarrierFrequencyFromStatistics);
+                spMppLSQ.Update(sineFitter.FrequencyDeviationLSQ);
+                spCarrierLSQ.Update(sineFitter.CarrierFrequencyLSQ);   
+                spTau.Update(sineFitter.Tau);
+                spModulationFrequency.Update(1.0 / sineFitter.Tau);
+                runningIndex += indexIncrement;
+            }
+        }
+
+        private readonly StatisticPod spMppFromStat;
+        private readonly StatisticPod spMppFromStatRMS;
+        private readonly StatisticPod spMppLSQ;        
+        private readonly StatisticPod spCarrierFromStat;
+        private readonly StatisticPod spCarrierLSQ;
+        private readonly StatisticPod spTau;
+        private readonly StatisticPod spModulationFrequency;
+
+        private readonly int[] counterData;
+
+    }
+}
