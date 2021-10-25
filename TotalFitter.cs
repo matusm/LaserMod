@@ -8,7 +8,7 @@ namespace LaserMod
         public double CarrierDispersion => statisticPod.StandardDeviation;
         public int SampleSize => (int)statisticPod.SampleSize;
 
-        public TotalFitter(int[] counterData)
+        public TotalFitter(double[] counterData)
         {
             statisticPod = new StatisticPod("total");
             foreach (int data in counterData)

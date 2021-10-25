@@ -1,5 +1,4 @@
 ﻿using At.Matus.StatisticPod;
-using System;
 
 namespace LaserMod
 {
@@ -10,7 +9,6 @@ namespace LaserMod
         public double ModulationDepthDispersionLSQ => spMppLSQ.StandardDeviation;
         public double ModulationDepth => spMppFromStat.AverageValue;
         public double ModulationDepthDispersion => spMppFromStat.StandardDeviation;
-        public double MModulationDepthRMS => Math.Sqrt(spMppFromStatRMS.AverageValue);
         public double ModulationFrequency => spModulationFrequency.AverageValue;
         public double ModulationFrequencyDispersion => spModulationFrequency.StandardDeviation;
         public double ModulationPeriod => spTau.AverageValue;
@@ -22,11 +20,10 @@ namespace LaserMod
         public long NumberOfWindows => spCarrierLSQ.SampleSize;
 
 
-        public MovingFitter(int[] counterData)
+        public MovingFitter(double[] counterData)
         {
             this.counterData = counterData;
             spMppFromStat = new StatisticPod("Mpp statistic");
-            spMppFromStatRMS = new StatisticPod("Mpp statistic RMS");
             spMppLSQ = new StatisticPod("Mpp LSQ");   
             spCarrierLSQ = new StatisticPod("carrier LSQ");
             spCarrierFromStat = new StatisticPod("carrier statistic");
@@ -38,7 +35,6 @@ namespace LaserMod
         {
             var sineFitter = new SineFitter();
             spMppFromStat.Restart();
-            spMppFromStatRMS.Restart();
             spCarrierFromStat.Restart();
             spMppLSQ.Restart();
             spCarrierLSQ.Restart();
@@ -55,7 +51,6 @@ namespace LaserMod
                     window[i] = counterData[runningIndex + i];
                 sineFitter.EstimateParametersFrom(window);
                 spMppFromStat.Update(sineFitter.FrequencyDeviationFromStatistics);
-                spMppFromStatRMS.Update(sineFitter.FrequencyDeviationFromStatistics * sineFitter.FrequencyDeviationFromStatistics);
                 spCarrierFromStat.Update(sineFitter.CarrierFrequencyFromStatistics);
                 spMppLSQ.Update(sineFitter.FrequencyDeviationLSQ);
                 spCarrierLSQ.Update(sineFitter.CarrierFrequencyLSQ);   
@@ -66,14 +61,13 @@ namespace LaserMod
         }
 
         private readonly StatisticPod spMppFromStat;
-        private readonly StatisticPod spMppFromStatRMS;
         private readonly StatisticPod spMppLSQ;        
         private readonly StatisticPod spCarrierFromStat;
         private readonly StatisticPod spCarrierLSQ;
         private readonly StatisticPod spTau;
         private readonly StatisticPod spModulationFrequency;
 
-        private readonly int[] counterData;
+        private readonly double[] counterData;
 
     }
 }
