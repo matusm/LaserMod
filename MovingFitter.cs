@@ -4,6 +4,7 @@ namespace LaserMod
 {
     public class MovingFitter
     {
+        
 
         public double ModulationDepthLSQ => spMppLSQ.AverageValue;
         public double ModulationDepthDispersionLSQ => spMppLSQ.StandardDeviation;
@@ -17,7 +18,8 @@ namespace LaserMod
         public double BeatFrequencyDispersion => spCarrierFromStat.StandardDeviation;
         public double BeatFrequencyLSQ => spCarrierLSQ.AverageValue;
         public double BeatFrequencyDispersionLSQ => spCarrierLSQ.StandardDeviation;
-        public long NumberOfWindows => spCarrierLSQ.SampleSize;
+        public int NumberOfWindows => (int)spCarrierLSQ.SampleSize;
+        public int WindowSize => windowSize;
 
 
         public MovingFitter(double[] counterData)
@@ -33,6 +35,7 @@ namespace LaserMod
 
         public void FitWithWindowSize(int windowSize)
         {
+            this.windowSize = windowSize;
             var sineFitter = new SineFitter();
             spMppFromStat.Restart();
             spCarrierFromStat.Restart();
@@ -68,6 +71,7 @@ namespace LaserMod
         private readonly StatisticPod spModulationFrequency;
 
         private readonly double[] counterData;
+        private int windowSize;
 
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="SineFitter.cs" />
     <Compile Include="MovingFitter.cs" />
     <Compile Include="TotalFitter.cs" />
+    <Compile Include="ParameterContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
