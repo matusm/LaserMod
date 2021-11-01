@@ -1,8 +1,8 @@
-﻿using System;
+﻿using At.Matus.StatisticPod;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace LaserMod
@@ -12,6 +12,7 @@ namespace LaserMod
 
         const double totalizeError = 0.286; // the counter readings are smaller by this value on average
         static double[] data;
+        static ParameterContainer container;
 
         static void Main(string[] args)
         {
@@ -19,53 +20,66 @@ namespace LaserMod
 
             // default parameters
             //string filename = @"E:\LaserModData\BEV2\T010BEV2_A.csv";
-            string filename = @"/Volumes/NO NAME/LaserModData/S01/T010S01.csv";
+            string filename = @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
             int windowSize = 1000;
             OutputType outputType = OutputType.Verbose;
 
             // command line logic
-            if (args.Length > 0)
-                filename = args[0];
             if (args.Length == 2)
                 windowSize = int.Parse(args[1]);
-            if (Path.GetExtension(filename) == "")
-                filename = Path.ChangeExtension(filename, ".csv");
-
-            // process a single file
-            ReadEvaluatePrint(filename, windowSize, outputType);
-            ReadEvaluatePrint(filename, windowSize, OutputType.Succinct);
-            Console.WriteLine();
-
-            //process a single file with different window sizes
-            for (int i = 450; i < 550; i += 1)
-                ReadEvaluatePrint(filename, i, OutputType.CsvLine);
-            for (int i = 100; i < 1000; i += 7)
-                ReadEvaluatePrint(filename, i, OutputType.SingleLine);
-            for (int i = 1000; i < 5000; i += 19)
-                ReadEvaluatePrint(filename, i, OutputType.SingleLine);
-            for (int i = 5000; i < 10001; i += 523)
-                ReadEvaluatePrint(filename, i, OutputType.SingleLine);
-
-            // process a whole directory of files
-            // string workingDirectory = @"/Volumes/NO NAME/LaserModData/S01/";     // Directory.GetCurrentDirectory();
-            string workingDirectory = Directory.GetCurrentDirectory();
-
-            string[] filenames = Directory.GetFiles(workingDirectory, @"*.csv");
-            Array.Sort(filenames);
-            foreach (string fn in filenames)
-                ReadEvaluatePrint(fn, windowSize, OutputType.SingleLine);
+            if (args.Length == 1)
+            {
+                filename = args[0];
+                if (Path.GetExtension(filename) == "")
+                    filename = Path.ChangeExtension(filename, ".csv");
+                ReadEvaluatePrint(filename, windowSize, outputType);
+            }
+            if (args.Length == 0)
+            {
+                // process a whole directory of files
+                StatisticPod spMpp = new StatisticPod("Mpp from all files");
+                StatisticPod spFc = new StatisticPod("fc from all files");
+                //string workingDirectory = @"/Volumes/NO NAME/LaserModData/S01/";
+                string workingDirectory = Directory.GetCurrentDirectory();
+                string[] filenames = Directory.GetFiles(workingDirectory, @"*.csv");
+                Array.Sort(filenames);
+                foreach (string fn in filenames)
+                {
+                    ReadEvaluatePrint(fn, windowSize, OutputType.SingleLine);
+                    spMpp.Update(container.Mpp);
+                    spFc.Update(container.BeatStat);
+                }
+                Console.WriteLine();
+                Console.WriteLine($"{spMpp.SampleSize,4} files -> Mpp = {spMpp.AverageValue * 1e-6:F3} ± {spMpp.StandardDeviation * 1e-6:F3} MHz");
+                Console.WriteLine($"           ->  fc = {spFc.AverageValue * 1e-6:F3} ± {spFc.StandardDeviation * 1e-6:F3} MHz");
+                Console.WriteLine();
+            }
 
         }
 
 
+        private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
+        {
+            ReadData(filename);
+            Evaluate(windowSize);
+            PrintParameters(outputType);
+        }
 
-        private static ParameterContainer ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
+        private static void ReadData(string filename)
         {
             double gateTime = EstimateGateTimeFromFileName(filename);
             data = ReadDataFromFile(filename);
-            // prepare the container for the data
-            ParameterContainer container = new ParameterContainer(gateTime);
+            container = new ParameterContainer(gateTime);
             container.Filename = Path.GetFileNameWithoutExtension(filename);
+        }
+
+        private static void PrintParameters(OutputType outputType)
+        {
+            Console.WriteLine(container.ToOutputString(outputType));
+        }
+
+        private static void Evaluate(int windowSize)
+        {
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
             container.SetParametersFromFitter(totalFitter);
@@ -73,10 +87,8 @@ namespace LaserMod
             MovingFitter movingFitter = new MovingFitter(data);
             movingFitter.FitWithWindowSize(windowSize);
             container.SetParametersFromFitter(movingFitter);
-            Console.WriteLine(container.ToOutputString(outputType));
-            return container;
         }
-    
+
         private static double[] ReadDataFromFile(string filename)
         {
             List<double> counterReadings = new List<double>();
