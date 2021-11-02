@@ -13,9 +13,10 @@ namespace LaserMod
 
 
         public string Filename { get; set; }
-        public double GateTime { get; private set; }
+        public double GateTime { get; private set; } // in s
         public double SincCorrection => SincCorrFactor(GateTime, ModTau);
         public int WindowSize => movFitter.WindowSize;
+        public double Resolution => 1 / GateTime; // in Hz
 
         public double ModulationFrequency => modulationFrequencyCalFactor * movFitter.ModulationFrequency;
         public double ModulationFrequencyDisp => modulationFrequencyCalFactor * movFitter.ModulationFrequencyDispersion;
@@ -61,6 +62,7 @@ namespace LaserMod
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"File name:               {Filename}");
                     sb.AppendLine($"Gate time:               {GateTime * 1e6:F0} µs");
+                    sb.AppendLine($"Frequency resolution:    {Resolution * 1e-6:F3} MHz");
                     sb.AppendLine($"Window size:             {WindowSize}");
                     sb.AppendLine($"Number of samples:       {totFitter.SampleSize}");
                     sb.AppendLine($"Minimum raw reading:     {totFitter.MinValue}");
@@ -73,9 +75,9 @@ namespace LaserMod
                     sb.AppendLine($"Correction factor:       {SincCorrection:F3}");
                     sb.AppendLine($"Modulation width (s):    {MppStat * 1e-6:F3} ± {MppDispStat * 1e-6:F3} MHz");
                     sb.AppendLine($"Modulation width (f):    {MppLSQ * 1e-6:F3} ± {MppDispLSQ * 1e-6:F3} MHz");
-                    sb.AppendLine("===========================================");
-                    sb.AppendLine($"Modulation width : {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
-                    sb.AppendLine("===========================================");
+                    sb.AppendLine("==============================================");
+                    sb.AppendLine($"Modulation width :       {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
+                    sb.AppendLine("==============================================");
                     return sb.ToString();
                 case OutputType.SingleLine:
                     return $"{Filename,-20} {GateTime * 1e6,5:F0} {WindowSize,6} {CarrierTotal * 1e-6,6:F4} {CarrierDispTotal * 1e-6,6:F4} {CarrierLSQ * 1e-6,6:F4} {CarrierDispLSQ * 1e-6,6:F4} {MppStat * 1e-6,6:F4} {MppDispStat * 1e-6,6:F4} {MppLSQ * 1e-6,6:F4} {MppDispLSQ * 1e-6,6:F4} {Tau * 1e6,5:F1} {TauDisp * 1e6,3:F1} {ModulationFrequency * 1e-3,6:F4} {ModulationFrequencyDisp * 1e-3,6:F4} {Mpp * 1e-6,6:F4} {MppUncert * 1e-6,6:F4}";
