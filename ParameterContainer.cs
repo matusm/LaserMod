@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Reflection;
 
 namespace LaserMod
 {
@@ -60,6 +61,8 @@ namespace LaserMod
                     return $"{Filename} -> Mpp = {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz";
                 case OutputType.Verbose:
                     StringBuilder sb = new StringBuilder();
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    sb.AppendLine($"Program version:         {assembly.GetName().Name} {assembly.GetName().Version}");
                     sb.AppendLine($"File name:               {Filename}");
                     sb.AppendLine($"Gate time:               {GateTime * 1e6:F0} µs");
                     sb.AppendLine($"Frequency resolution:    {Resolution * 1e-6:F3} MHz");
@@ -73,8 +76,8 @@ namespace LaserMod
                     sb.AppendLine($"Modulation Period:       {Tau * 1e6:F1} ± {TauDisp * 1e6:F1} µs");
                     sb.AppendLine($"Modulation frequency:    {ModulationFrequency * 1e-3:F3} ± {ModulationFrequencyDisp * 1e-3:F3} kHz");
                     sb.AppendLine($"Correction factor:       {SincCorrection:F3}");
-                    sb.AppendLine($"Modulation width (s):    {MppStat * 1e-6:F3} ± {MppDispStat * 1e-6:F3} MHz");
-                    sb.AppendLine($"Modulation width (f):    {MppLSQ * 1e-6:F3} ± {MppDispLSQ * 1e-6:F3} MHz");
+                    sb.AppendLine($"Modulation width (sts):  {MppStat * 1e-6:F3} ± {MppDispStat * 1e-6:F3} MHz");
+                    sb.AppendLine($"Modulation width (LSQ):  {MppLSQ * 1e-6:F3} ± {MppDispLSQ * 1e-6:F3} MHz");
                     sb.AppendLine("==============================================");
                     sb.AppendLine($"Modulation width:        {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
                     sb.AppendLine("==============================================");
