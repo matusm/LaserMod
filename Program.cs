@@ -26,8 +26,10 @@ namespace LaserMod
 
             // command line logic
             if (args.Length == 2)
+            {
                 windowSize = int.Parse(args[1]);
-            if (args.Length == 1)
+            }
+            if (args.Length >= 1)
             {
                 filename = args[0];
                 if (Path.GetExtension(filename) == "")
