@@ -47,7 +47,7 @@ namespace LaserMod
                 {
                     ReadEvaluatePrint(fn, windowSize, OutputType.SingleLine);
                     spMpp.Update(container.Mpp);
-                    spFc.Update(container.BeatStat);
+                    spFc.Update(container.CarrierStat);
                 }
                 Console.WriteLine();
                 Console.WriteLine($"{spMpp.SampleSize,4} files -> Mpp =  {spMpp.AverageValue * 1e-6:F3} ± {spMpp.StandardDeviation * 1e-6:F3} MHz");
