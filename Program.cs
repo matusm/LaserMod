@@ -50,13 +50,12 @@ namespace LaserMod
                     spFc.Update(container.BeatStat);
                 }
                 Console.WriteLine();
-                Console.WriteLine($"{spMpp.SampleSize,4} files -> Mpp = {spMpp.AverageValue * 1e-6:F3} ± {spMpp.StandardDeviation * 1e-6:F3} MHz");
+                Console.WriteLine($"{spMpp.SampleSize,4} files -> Mpp =  {spMpp.AverageValue * 1e-6:F3} ± {spMpp.StandardDeviation * 1e-6:F3} MHz");
                 Console.WriteLine($"           ->  fc = {spFc.AverageValue * 1e-6:F3} ± {spFc.StandardDeviation * 1e-6:F3} MHz");
                 Console.WriteLine();
             }
 
         }
-
 
         private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
         {
