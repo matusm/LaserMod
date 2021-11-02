@@ -9,10 +9,11 @@ namespace LaserMod
         public int SampleSize => (int)statisticPod.SampleSize;
         public int MinValue => (int)statisticPod.MinimumValue;
         public int MaxValue => (int)statisticPod.MaximumValue;
+        
         public TotalFitter(double[] counterData)
         {
             statisticPod = new StatisticPod("total");
-            foreach (int data in counterData)
+            foreach (double data in counterData)
                 statisticPod.Update(data);
         }
 

@@ -14,10 +14,10 @@ namespace LaserMod
         public double ModulationFrequencyDispersion => spModulationFrequency.StandardDeviation;
         public double ModulationPeriod => spTau.AverageValue;
         public double ModulationPeriodDispersion => spTau.StandardDeviation;
-        public double BeatFrequency => spCarrierFromStat.AverageValue;
-        public double BeatFrequencyDispersion => spCarrierFromStat.StandardDeviation;
-        public double BeatFrequencyLSQ => spCarrierLSQ.AverageValue;
-        public double BeatFrequencyDispersionLSQ => spCarrierLSQ.StandardDeviation;
+        public double CarrierFrequency => spCarrierFromStat.AverageValue;
+        public double CarrierFrequencyDispersion => spCarrierFromStat.StandardDeviation;
+        public double CarrierFrequencyLSQ => spCarrierLSQ.AverageValue;
+        public double CarrierFrequencyDispersionLSQ => spCarrierLSQ.StandardDeviation;
         public int NumberOfWindows => (int)spCarrierLSQ.SampleSize;
         public int WindowSize => windowSize;
 

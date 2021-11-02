@@ -26,10 +26,10 @@ namespace LaserMod
 
         public double CarrierTotal => TotalizeToHz(totFitter.Carrier);
         public double CarrierDispTotal => TotalizeToHz(totFitter.CarrierDispersion);
-        public double CarrierStat => TotalizeToHz(movFitter.BeatFrequency);
-        public double CarrierDispStat => TotalizeToHz(movFitter.BeatFrequencyDispersion);
-        public double CarrierLSQ => TotalizeToHz(movFitter.BeatFrequencyLSQ);
-        public double CarrierDispLSQ => TotalizeToHz(movFitter.BeatFrequencyDispersionLSQ);
+        public double CarrierStat => TotalizeToHz(movFitter.CarrierFrequency);
+        public double CarrierDispStat => TotalizeToHz(movFitter.CarrierFrequencyDispersion);
+        public double CarrierLSQ => TotalizeToHz(movFitter.CarrierFrequencyLSQ);
+        public double CarrierDispLSQ => TotalizeToHz(movFitter.CarrierFrequencyDispersionLSQ);
         public double MppStat => TotalizeToHz(movFitter.ModulationDepth) * SincCorrection;
         public double MppDispStat => TotalizeToHz(movFitter.ModulationDepthDispersion);
         public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection;
@@ -76,7 +76,7 @@ namespace LaserMod
                     sb.AppendLine($"Modulation width (s):    {MppStat * 1e-6:F3} ± {MppDispStat * 1e-6:F3} MHz");
                     sb.AppendLine($"Modulation width (f):    {MppLSQ * 1e-6:F3} ± {MppDispLSQ * 1e-6:F3} MHz");
                     sb.AppendLine("==============================================");
-                    sb.AppendLine($"Modulation width :       {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
+                    sb.AppendLine($"Modulation width:        {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
                     sb.AppendLine("==============================================");
                     return sb.ToString();
                 case OutputType.SingleLine:
