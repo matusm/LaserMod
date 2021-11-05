@@ -6,12 +6,10 @@ namespace LaserMod
 {
     public class ParameterContainer
     {
-        const double totalizeError = 0.286; // the counter readings are smaller by this value on average
         private const double modulationFrequencyCalFactor = 40848.0222; // Hz/point
         private const double maxGateTime = 22e-6;   // 22 µs, for longer gatetimes the modulation frequency can not be estimated
         private TotalFitter totFitter;
         private MovingFitter movFitter;
-
 
         public string Filename { get; set; }
         public double GateTime { get; private set; } // in s

@@ -5,7 +5,6 @@ namespace LaserMod
     public class MovingFitter
     {
         
-
         public double ModulationDepthLSQ => spMppLSQ.AverageValue;
         public double ModulationDepthDispersionLSQ => spMppLSQ.StandardDeviation;
         public double ModulationDepth => spMppFromStat.AverageValue;
@@ -20,7 +19,6 @@ namespace LaserMod
         public double CarrierFrequencyDispersionLSQ => spCarrierLSQ.StandardDeviation;
         public int NumberOfWindows => (int)spCarrierLSQ.SampleSize;
         public int WindowSize => windowSize;
-
 
         public MovingFitter(double[] counterData)
         {

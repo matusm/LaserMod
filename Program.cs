@@ -19,8 +19,8 @@ namespace LaserMod
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             // default parameters
-            //string filename = @"E:\LaserModData\BEV2\T010BEV2_A.csv";
-            string filename = @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
+            // @"E:\LaserModData\BEV2\T010BEV2_A.csv";
+            // @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
             int windowSize = 1000;
             OutputType outputType = OutputType.Verbose;
 
@@ -31,14 +31,14 @@ namespace LaserMod
             }
             if (args.Length >= 1)
             {
-                filename = args[0];
+                string filename = args[0];
                 if (Path.GetExtension(filename) == "")
                     filename = Path.ChangeExtension(filename, ".csv");
                 ReadEvaluatePrint(filename, windowSize, outputType);
             }
             if (args.Length == 0)
             {
-                // process a whole directory of files
+                // process a whole directory of files and make simple statistic
                 StatisticPod spMpp = new StatisticPod("Mpp from all files");
                 StatisticPod spFc = new StatisticPod("fc from all files");
                 //string workingDirectory = @"/Volumes/NO NAME/LaserModData/S01/";
@@ -58,6 +58,8 @@ namespace LaserMod
             }
 
         }
+
+        //*********************************************************************************************
 
         private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
         {
@@ -112,7 +114,7 @@ namespace LaserMod
             string baseFilename = Path.GetFileNameWithoutExtension(filename);
             string token = Regex.Match(baseFilename, @"\d+").Value;
             int microSeconds = int.Parse(token);
-            return (double)microSeconds * 1e-6;
+            return microSeconds * 1e-6;
         }
 
         private static double MyParse(string line)
