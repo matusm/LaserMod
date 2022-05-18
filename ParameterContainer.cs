@@ -7,7 +7,7 @@ namespace LaserMod
     public class ParameterContainer
     {
         private const double modulationFrequencyCalFactor = 40848.0222; // Hz/point
-        private const double maxGateTime = 22e-6;   // 22 µs, for longer gatetimes the modulation frequency can not be estimated
+        private const double maxGateTime = 22e-6;   // for gatetimes longer than 22 µs the modulation frequency can not be estimated
         private TotalFitter totFitter;
         private MovingFitter movFitter;
 
