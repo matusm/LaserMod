@@ -64,8 +64,32 @@ namespace LaserMod
         private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
         {
             ReadData(filename);
-            Evaluate(windowSize);
+            if (container.GateTimeToLong)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Warning: gate time to long! Some parameters invalid!");
+            }
+            EvaluateAll(windowSize);
+            int optimalWindowSize = EstimateOptimalWindowSize(windowSize, container.RawTau);
+            EvaluatePiecewise(optimalWindowSize);
             PrintParameters(outputType);
+        }
+
+        private static int EstimateOptimalWindowSize(int maxWindowSize, double tau)
+        {
+            double minimumFringeFraction = double.PositiveInfinity;
+            int optimalWindowSize = maxWindowSize;
+            for (int i = maxWindowSize/10; i <= maxWindowSize; i++)
+            {
+                double fringe = i / tau;
+                double fringeFraction = Math.Abs(fringe - Math.Round(fringe));
+                if (fringeFraction<=minimumFringeFraction)
+                {
+                    minimumFringeFraction = fringeFraction;
+                    optimalWindowSize = i;
+                }
+            }
+            return optimalWindowSize;
         }
 
         private static void ReadData(string filename)
@@ -81,11 +105,17 @@ namespace LaserMod
             Console.WriteLine(container.ToOutputString(outputType));
         }
 
-        private static void Evaluate(int windowSize)
+        private static void EvaluateAll(int windowSize)
         {
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
             container.SetParametersFromFitter(totalFitter);
+            // moving window calculation
+            EvaluatePiecewise(windowSize);
+        }
+
+        private static void EvaluatePiecewise(int windowSize)
+        {
             // moving window calculation
             MovingFitter movingFitter = new MovingFitter(data);
             movingFitter.FitWithWindowSize(windowSize);
@@ -109,6 +139,7 @@ namespace LaserMod
             return counterReadings.ToArray();
         }
 
+        // the first valid integer in the file name is interpreted as the gate time in µs
         private static double EstimateGateTimeFromFileName(string filename)
         {
             string baseFilename = Path.GetFileNameWithoutExtension(filename);

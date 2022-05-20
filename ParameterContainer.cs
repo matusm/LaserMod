@@ -13,6 +13,7 @@ namespace LaserMod
 
         public string Filename { get; set; }
         public double GateTime { get; private set; } // in s
+        public bool GateTimeToLong => GateTime > maxGateTime;
         public double SincCorrection => SincCorrFactor(GateTime, ModTau);
         public int WindowSize => movFitter.WindowSize;
         public double Resolution => 1 / GateTime; // in Hz
@@ -22,6 +23,7 @@ namespace LaserMod
         public double Tau => movFitter.ModulationPeriod / modulationFrequencyCalFactor;
         public double TauDisp => movFitter.ModulationPeriodDispersion / modulationFrequencyCalFactor;
         public double ModTau => 1 / ModulationFrequency;
+        public double RawTau => movFitter.ModulationPeriod;
 
         public double CarrierTotal => TotalizeToHz(totFitter.Carrier);
         public double CarrierDispTotal => TotalizeToHz(totFitter.CarrierDispersion);
@@ -60,6 +62,7 @@ namespace LaserMod
                 case OutputType.Verbose:
                     StringBuilder sb = new StringBuilder();
                     Assembly assembly = Assembly.GetExecutingAssembly();
+                    sb.AppendLine();
                     sb.AppendLine($"Program version:         {assembly.GetName().Name} {assembly.GetName().Version}");
                     sb.AppendLine($"File name:               {Filename}");
                     sb.AppendLine($"Gate time:               {GateTime * 1e6:F0} µs");

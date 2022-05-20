@@ -1,9 +1,9 @@
 ﻿using At.Matus.StatisticPod;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearRegression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearRegression;
 
 namespace LaserMod
 {
@@ -13,7 +13,7 @@ namespace LaserMod
         public double CarrierFrequencyLSQ;
         public double FrequencyDeviationFromStatistics;
         public double CarrierFrequencyFromStatistics;
-        public double Tau; // period of modulation frequency
+        public double Tau; // period of modulation frequency in units of samples
         public double Phase;
 
         public void EstimateParametersFrom(double[] data)
@@ -76,6 +76,7 @@ namespace LaserMod
             }
         }
 
+        // the estimated period of the modulation frequency in units of samples
         private double EstimatePeriod()
         {
             List<int> zeroPos = new List<int>();

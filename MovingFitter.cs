@@ -11,8 +11,8 @@ namespace LaserMod
         public double ModulationDepthDispersion => spMppFromStat.StandardDeviation;
         public double ModulationFrequency => spModulationFrequency.AverageValue;
         public double ModulationFrequencyDispersion => spModulationFrequency.StandardDeviation;
-        public double ModulationPeriod => spTau.AverageValue;
-        public double ModulationPeriodDispersion => spTau.StandardDeviation;
+        public double ModulationPeriod => spTau.AverageValue; // in units of samples
+        public double ModulationPeriodDispersion => spTau.StandardDeviation; // in units of samples
         public double CarrierFrequency => spCarrierFromStat.AverageValue;
         public double CarrierFrequencyDispersion => spCarrierFromStat.StandardDeviation;
         public double CarrierFrequencyLSQ => spCarrierLSQ.AverageValue;
@@ -27,7 +27,7 @@ namespace LaserMod
             spMppLSQ = new StatisticPod("Mpp LSQ");   
             spCarrierLSQ = new StatisticPod("carrier LSQ");
             spCarrierFromStat = new StatisticPod("carrier statistic");
-            spTau = new StatisticPod("mdulation period");
+            spTau = new StatisticPod("mdulation period"); 
             spModulationFrequency = new StatisticPod("modulation frequency");
         }
 
