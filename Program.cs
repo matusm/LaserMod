@@ -25,6 +25,9 @@ namespace LaserMod
             OutputType outputType = OutputType.Verbose;
 
             // command line logic
+            // two arguments: first file name, second window size
+            // one argument: file name
+            // no argument: process all files in working directory
             if (args.Length == 2)
             {
                 windowSize = int.Parse(args[1]);
@@ -67,7 +70,7 @@ namespace LaserMod
             if (container.GateTimeToLong)
             {
                 Console.WriteLine();
-                Console.WriteLine("Warning: gate time to long! Some parameters invalid!");
+                Console.WriteLine("Warning: gate time to long! Some parameters may be invalid!");
             }
             EvaluateAll(windowSize);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, container.RawTau);
