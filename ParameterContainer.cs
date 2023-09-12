@@ -38,20 +38,11 @@ namespace LaserMod
         public double Mpp => (MppLSQ + MppStat) / 2.0;
         public double MppUncert => Math.Abs(MppStat - MppLSQ);
 
-        public ParameterContainer(double gateTime)
-        {
-            GateTime = gateTime;
-        }
+        public ParameterContainer(double gateTime) => GateTime = gateTime;
 
-        public void SetParametersFromFitter(TotalFitter totFitter)
-        {
-            this.totFitter = totFitter;
-        }
+        public void SetParametersFromFitter(TotalFitter totFitter) => this.totFitter = totFitter;
 
-        public void SetParametersFromFitter(MovingFitter movFitter)
-        {
-            this.movFitter = movFitter;
-        }
+        public void SetParametersFromFitter(MovingFitter movFitter) => this.movFitter = movFitter;
 
         public string ToOutputString(OutputType outputType)
         {
@@ -96,10 +87,7 @@ namespace LaserMod
             }
         }
 
-        private double TotalizeToHz(double counterReading)
-        {
-            return counterReading / GateTime;
-        }
+        private double TotalizeToHz(double counterReading) => counterReading / GateTime;
 
         private double SincCorrFactor(double gateTime, double modulationPeriod)
         {
