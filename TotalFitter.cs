@@ -12,9 +12,8 @@ namespace LaserMod
         
         public TotalFitter(double[] counterData)
         {
-            statisticPod = new StatisticPod("total");
-            foreach (double data in counterData)
-                statisticPod.Update(data);
+            statisticPod = new StatisticPod();
+            statisticPod.Update(counterData);
         }
 
         private readonly StatisticPod statisticPod;
