@@ -13,6 +13,7 @@ namespace LaserMod
         const double totalizeError = 0.286; // the counter readings are smaller by this value on average
         static double[] data;
         static ParameterContainer container;
+        static string outputFilename;
 
         static void Main(string[] args)
         {
@@ -37,6 +38,7 @@ namespace LaserMod
                 string filename = args[0];
                 if (Path.GetExtension(filename) == "")
                     filename = Path.ChangeExtension(filename, ".csv");
+                outputFilename = Path.ChangeExtension(filename, "prn");
                 ReadEvaluatePrint(filename, windowSize, outputType);
             }
             if (args.Length == 0)
