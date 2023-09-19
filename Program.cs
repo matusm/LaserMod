@@ -114,6 +114,7 @@ namespace LaserMod
         {
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
+            FftPeriodFitter fft = new FftPeriodFitter(totalFitter);
             container.SetParametersFromFitter(totalFitter);
             // moving window calculation
             EvaluatePiecewise(windowSize);
