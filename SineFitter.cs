@@ -1,8 +1,6 @@
 ﻿using At.Matus.StatisticPod;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearRegression;
-using MathNet.Numerics.IntegralTransforms;
-using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,9 +35,6 @@ namespace LaserMod
                 xData[i] = i;
             for (int i = 0; i < data.Length; i++)
                 yData[i] = data[i] - CarrierFrequencyFromStatistics;
-
-
-            EstimatePeriodFft();
             Tau = EstimatePeriod();
             LeastSquareFit();
         }
@@ -101,23 +96,6 @@ namespace LaserMod
             if (zeroNeg.Count > 1)
                 negPeriod = (zeroNeg.Last() - zeroNeg.First()) / (double)(zeroNeg.Count - 1);
             return 0.5 * (posPeriod + negPeriod);
-        }
-
-        private void EstimatePeriodFft()
-        {
-            double[] buffer = new double[yData.Length];
-            for (int i = 0; i < yData.Length; i++)
-            {
-                buffer[i] = (double)yData[i];
-            }
-            Fourier.ForwardReal(buffer, buffer.Length - 2, FourierOptions.Default);
-            Console.WriteLine("=======================================");
-            for (int i = 0; i < buffer.Length-2; i++)
-            {
-                Console.WriteLine($"{i} : {buffer[i]}");
-            }
-            Console.WriteLine("=======================================");
-
         }
 
         private void InvalidateParameters()

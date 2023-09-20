@@ -13,7 +13,7 @@ namespace LaserMod
 
         public string Filename { get; set; }
         public double GateTime { get; private set; } // in s
-        public bool GateTimeToLong => GateTime > maxGateTime;
+        public bool IsGateTimeTooLong => GateTime > maxGateTime;
         public double SincCorrection => SincCorrFactor(GateTime, ModTau);
         public int WindowSize => movFitter.WindowSize;
         public double Resolution => 1 / GateTime; // in Hz

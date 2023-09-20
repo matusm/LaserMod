@@ -69,7 +69,7 @@ namespace LaserMod
         private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
         {
             ReadData(filename);
-            if (container.GateTimeToLong)
+            if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine();
                 Console.WriteLine("Warning: gate time to long! Some parameters may be invalid!");
@@ -115,6 +115,9 @@ namespace LaserMod
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
             FftPeriodFitter fft = new FftPeriodFitter(totalFitter);
+
+            Console.WriteLine($"FFT:  f={fft.RawFrequency}   P={fft.RawAmplitude}");
+
             container.SetParametersFromFitter(totalFitter);
             // moving window calculation
             EvaluatePiecewise(windowSize);
@@ -128,14 +131,15 @@ namespace LaserMod
             container.SetParametersFromFitter(movingFitter);
         }
 
+        // the raw readings are corrected by the totalize error!
         private static double[] ReadDataFromFile(string filename)
         {
             List<double> counterReadings = new List<double>();
-            var reader = new StreamReader(File.OpenRead(filename));
+            StreamReader reader = new StreamReader(File.OpenRead(filename));
             while (!reader.EndOfStream)
             {
-                var line = reader.ReadLine();
-                double y = MyParse(line);
+                string line = reader.ReadLine();
+                double y = MyParseDouble(line);
                 if (!double.IsNaN(y))
                 {
                     counterReadings.Add(y + totalizeError);
@@ -146,20 +150,17 @@ namespace LaserMod
         }
 
         // the first valid integer in the file name is interpreted as the gate time in µs
+        // the gate time is returned in s
         private static double EstimateGateTimeFromFileName(string filename)
         {
             string baseFilename = Path.GetFileNameWithoutExtension(filename);
             string token = Regex.Match(baseFilename, @"\d+").Value;
-            int microSeconds = int.Parse(token);
-            return microSeconds * 1e-6;
+            return int.Parse(token) * 1e-6;
         }
 
-        private static double MyParse(string line)
+        private static double MyParseDouble(string line)
         {
-            if (double.TryParse(line, out double value))
-                return value;
-            else
-                return double.NaN;
+            return double.TryParse(line, out double value) ? value : double.NaN;
         }
     }
 

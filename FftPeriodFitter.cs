@@ -1,11 +1,12 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using MathNet.Numerics.IntegralTransforms;
 
 namespace LaserMod
 {
     public class FftPeriodFitter
     {
+        public double RawFrequency { get; private set; }
+        public double RawAmplitude { get; private set; }
 
         public FftPeriodFitter(TotalFitter totalFitter)
         {
@@ -27,20 +28,19 @@ namespace LaserMod
         {
             var buffer = LoadCounterReadings();
             Fourier.Forward(buffer, FourierOptions.Default);
-            double[] power = new double[buffer.Length];
-            for (int i = 0; i < buffer.Length; i++)
+            int maxPosition = 0;
+            double maxPower = 0;
+            for (int i = 1; i < buffer.Length/2; i++)
             {
-                power[i] = Complex.Abs(buffer[i]);
+                double power = Complex.Abs(buffer[i]);
+                if(power>= maxPower)
+                {
+                    maxPower = power;
+                    maxPosition = i;
+                }
             }
-
-
-            Console.WriteLine("=======================================");
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                Console.WriteLine($"{i} : {power[i]}");
-            }
-            Console.WriteLine("=======================================");
-
+            RawFrequency = maxPosition;
+            RawAmplitude = maxPower;
         }
 
         private readonly TotalFitter totalFitter;
