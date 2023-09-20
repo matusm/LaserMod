@@ -3,12 +3,12 @@ using MathNet.Numerics.IntegralTransforms;
 
 namespace LaserMod
 {
-    public class FftPeriodFitter
+    public class FftPeriodEstimator
     {
         public double RawFrequency { get; private set; }
         public double RawAmplitude { get; private set; }
 
-        public FftPeriodFitter(TotalFitter totalFitter)
+        public FftPeriodEstimator(TotalFitter totalFitter)
         {
             this.totalFitter = totalFitter;
             FourierTransformData();
@@ -26,14 +26,14 @@ namespace LaserMod
 
         private void FourierTransformData()
         {
-            var buffer = LoadCounterReadings();
+            Complex[] buffer = LoadCounterReadings();
             Fourier.Forward(buffer, FourierOptions.Default);
             int maxPosition = 0;
             double maxPower = 0;
-            for (int i = 1; i < buffer.Length/2; i++)
+            for (int i = 1; i < buffer.Length / 2; i++)
             {
                 double power = Complex.Abs(buffer[i]);
-                if(power>= maxPower)
+                if (power >= maxPower)
                 {
                     maxPower = power;
                     maxPosition = i;

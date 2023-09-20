@@ -60,8 +60,8 @@ namespace LaserMod
                     sb.AppendLine($"Frequency resolution:    {Resolution * 1e-6:F3} MHz");
                     sb.AppendLine($"Window size:             {WindowSize}");
                     sb.AppendLine($"Number of samples:       {totFitter.SampleSize}");
-                    sb.AppendLine($"Minimum raw reading:     {totFitter.MinValue}");
-                    sb.AppendLine($"Maximum raw reading:     {totFitter.MaxValue}");
+                    sb.AppendLine($"Minimum raw reading:     {totFitter.MinValue:F0}");
+                    sb.AppendLine($"Maximum raw reading:     {totFitter.MaxValue:F0}");
                     sb.AppendLine($"Carrier frequency (tot): {CarrierTotal * 1e-6:F3} ± {CarrierDispTotal * 1e-6:F3} MHz");
                     sb.AppendLine($"Carrier frequency (sta): {CarrierStat * 1e-6:F3} ± {CarrierDispStat * 1e-6:F3} MHz");
                     sb.AppendLine($"Carrier frequency (LSQ): {CarrierLSQ * 1e-6:F3} ± {CarrierDispLSQ * 1e-6:F3} MHz");

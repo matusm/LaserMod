@@ -114,7 +114,7 @@ namespace LaserMod
         {
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
-            FftPeriodFitter fft = new FftPeriodFitter(totalFitter);
+            FftPeriodEstimator fft = new FftPeriodEstimator(totalFitter);
 
             Console.WriteLine($"FFT:  f={fft.RawFrequency}   P={fft.RawAmplitude}");
 
