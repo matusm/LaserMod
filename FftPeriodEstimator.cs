@@ -1,12 +1,15 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using MathNet.Numerics.IntegralTransforms;
 
 namespace LaserMod
 {
     public class FftPeriodEstimator
     {
-        public double RawFrequency { get; private set; }
-        public double RawAmplitude { get; private set; }
+        public double ModulationFrequency => RawFrequency / InstrumentConstants.FftCalFactor;
+        public double ModulationPeriod => 1 / ModulationFrequency;
+        public double RawModulationPeriod => 1e6 / RawFrequency;    // in units of samples
+        public int RawFrequency { get; private set; }
 
         public FftPeriodEstimator(TotalFitter totalFitter)
         {
@@ -40,7 +43,6 @@ namespace LaserMod
                 }
             }
             RawFrequency = maxPosition;
-            RawAmplitude = maxPower;
         }
 
         private readonly TotalFitter totalFitter;

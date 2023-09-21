@@ -56,7 +56,6 @@
     <Compile Include="InstrumentConstants.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimplePeriodEstimator.cs" />
     <Compile Include="SineFitter.cs" />
     <Compile Include="MovingFitter.cs" />
     <Compile Include="TotalFitter.cs" />

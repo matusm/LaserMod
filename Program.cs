@@ -10,8 +10,8 @@ namespace LaserMod
     class Program
     {
 
-        const double totalizeError = 0.286; // the counter readings are smaller by this value on average
         static double[] data;
+        static double rawPeriod; //TODO bad!!!
         static ParameterContainer container;
         static string outputFilename;
 
@@ -72,11 +72,11 @@ namespace LaserMod
             if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine();
-                Console.WriteLine("Warning: gate time to long! Some parameters may be invalid!");
+                Console.WriteLine("Warning: gate time too long! Some parameters may be invalid!");
             }
             EvaluateAll(windowSize);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, container.RawTau);
-            EvaluatePiecewise(optimalWindowSize);
+            EvaluatePiecewise(optimalWindowSize, rawPeriod);
             PrintParameters(outputType);
         }
 
@@ -115,18 +115,18 @@ namespace LaserMod
             // overall calculation
             TotalFitter totalFitter = new TotalFitter(data);
             FftPeriodEstimator fft = new FftPeriodEstimator(totalFitter);
-
-            Console.WriteLine($"FFT:  f={fft.RawFrequency}   P={fft.RawAmplitude}");
+            rawPeriod = fft.RawModulationPeriod;
 
             container.SetParametersFromFitter(totalFitter);
+            container.SetParametersFromFitter(fft);
             // moving window calculation
-            EvaluatePiecewise(windowSize);
+            EvaluatePiecewise(windowSize, rawPeriod) ;
         }
 
-        private static void EvaluatePiecewise(int windowSize)
+        private static void EvaluatePiecewise(int windowSize, double rawTau)
         {
             // moving window calculation
-            MovingFitter movingFitter = new MovingFitter(data);
+            MovingFitter movingFitter = new MovingFitter(data, rawTau);
             movingFitter.FitWithWindowSize(windowSize);
             container.SetParametersFromFitter(movingFitter);
         }
@@ -142,7 +142,7 @@ namespace LaserMod
                 double y = MyParseDouble(line);
                 if (!double.IsNaN(y))
                 {
-                    counterReadings.Add(y + totalizeError);
+                    counterReadings.Add(y + InstrumentConstants.TotalizeCorrection);
                 }
             }
             reader.Close();

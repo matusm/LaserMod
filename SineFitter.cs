@@ -1,9 +1,7 @@
-﻿using At.Matus.StatisticPod;
+﻿using System;
+using System.Collections.Generic;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearRegression;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LaserMod
 {
@@ -16,26 +14,22 @@ namespace LaserMod
         public double Tau; // period of modulation frequency in units of samples
         public double Phase;
 
-        public void EstimateParametersFrom(double[] data)
+        public void EstimateParametersFrom(double[] data, double rawTau)
         {
             InvalidateParameters();
+            Tau = rawTau;
             if (data.Length < 10) return;
-            var stPod = new StatisticPod();
 
-            // Estimate from statistics
-            foreach (var y in data)
-                stPod.Update(y);
-            FrequencyDeviationFromStatistics = stPod.StandardDeviation * Math.Sqrt(2.0) * 2; // assuming an U-distribution
-            CarrierFrequencyFromStatistics = stPod.AverageValue;
+            TotalFitter totFit = new TotalFitter(data);
+            FrequencyDeviationFromStatistics = totFit.CarrierDispersion * Math.Sqrt(2.0) * 2; // assuming an U-distribution
+            CarrierFrequencyFromStatistics = totFit.Carrier;
 
             // generate x,y data array
             xData = new double[data.Length];
-            yData = new double[data.Length];
             for (int i = 0; i < xData.Length; i++)
                 xData[i] = i;
-            for (int i = 0; i < data.Length; i++)
-                yData[i] = data[i] - CarrierFrequencyFromStatistics;
-            Tau = EstimatePeriod();
+            yData = totFit.ReducedCounterData;
+
             LeastSquareFit();
         }
 
@@ -73,29 +67,6 @@ namespace LaserMod
             {
                 // NOP
             }
-        }
-
-        // the estimated period of the modulation frequency in units of samples
-        private double EstimatePeriod()
-        {
-            List<int> zeroPos = new List<int>();
-            List<int> zeroNeg = new List<int>();
-
-            for (int i = 0; i < yData.Length - 1; i++)
-            {
-                if (yData[i] > 0 && yData[i + 1] < 0)
-                    zeroPos.Add(i);
-                if (yData[i] < 0 && yData[i + 1] > 0)
-                    zeroNeg.Add(i);
-            }
-
-            double posPeriod = double.NaN;
-            double negPeriod = double.NaN;
-            if (zeroPos.Count > 1)
-                posPeriod = (zeroPos.Last() - zeroPos.First()) / (double)(zeroPos.Count - 1);
-            if (zeroNeg.Count > 1)
-                negPeriod = (zeroNeg.Last() - zeroNeg.First()) / (double)(zeroNeg.Count - 1);
-            return 0.5 * (posPeriod + negPeriod);
         }
 
         private void InvalidateParameters()

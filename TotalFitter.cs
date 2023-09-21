@@ -15,10 +15,10 @@ namespace LaserMod
         {
             statisticPod = new StatisticPod();
             statisticPod.Update(counterData);
-            ReducedCounterData = GetReducedCounterData(counterData);
+            ReducedCounterData = ReduceCounterData(counterData);
         }
 
-        private double[] GetReducedCounterData(double[] data)
+        private double[] ReduceCounterData(double[] data)
         {
             double[] reducedData = new double[data.Length];
             for (int i = 0; i < reducedData.Length; i++)
