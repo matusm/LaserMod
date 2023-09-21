@@ -7,22 +7,22 @@ namespace LaserMod
 {
     public class SineFitter
     {
-        public double FrequencyDeviationLSQ;
-        public double CarrierFrequencyLSQ;
-        public double FrequencyDeviationFromStatistics;
-        public double CarrierFrequencyFromStatistics;
-        public double Tau; // period of modulation frequency in units of samples
-        public double Phase;
+        public double FrequencyDispersionFromLSQ { get; private set; }
+        public double CarrierFrequencyFromLSQ { get; private set; }
+        public double FrequencyDispersionFromStatistics { get; private set; }
+        public double CarrierFrequencyFromStatistics { get; private set; }
+        public double FrequencyRangeFromStatistics { get; private set; }
 
+        // rawTau // period of modulation frequency in units of samples
         public void EstimateParametersFrom(double[] data, double rawTau)
         {
             InvalidateParameters();
-            Tau = rawTau;
             if (data.Length < 10) return;
 
             TotalFitter totFit = new TotalFitter(data);
-            FrequencyDeviationFromStatistics = totFit.CarrierDispersion * Math.Sqrt(2.0) * 2; // assuming an U-distribution
+            FrequencyDispersionFromStatistics = totFit.CarrierDispersion * Math.Sqrt(2.0) * 2; // assuming an U-distribution
             CarrierFrequencyFromStatistics = totFit.Carrier;
+            FrequencyRangeFromStatistics = totFit.Range;
 
             // generate x,y data array
             xData = new double[data.Length];
@@ -30,13 +30,13 @@ namespace LaserMod
                 xData[i] = i;
             yData = totFit.ReducedCounterData;
 
-            LeastSquareFit();
+            LeastSquareFit(rawTau);
         }
 
-        private void LeastSquareFit()
+        private void LeastSquareFit(double rawTau)
         {
             // generate vectors and matrices (the naive way)
-            double omega = 2 * Math.PI / Tau;
+            double omega = 2 * Math.PI / rawTau;
             double[] oneVector = new double[yData.Length];
             double[] sineVector = new double[yData.Length];
             double[] cosineVector = new double[yData.Length];
@@ -59,9 +59,8 @@ namespace LaserMod
 
                 Vector<double> p = MultipleRegression.NormalEquations(X, y);
 
-                CarrierFrequencyLSQ = p[0] + CarrierFrequencyFromStatistics;
-                FrequencyDeviationLSQ = 2 * Math.Sqrt((p[1] * p[1]) + (p[2] * p[2]));
-                Phase = Math.Atan2(p[2], p[1]);
+                CarrierFrequencyFromLSQ = p[0] + CarrierFrequencyFromStatistics;
+                FrequencyDispersionFromLSQ = 2 * Math.Sqrt((p[1] * p[1]) + (p[2] * p[2]));
             }
             catch (Exception)
             {
@@ -71,12 +70,11 @@ namespace LaserMod
 
         private void InvalidateParameters()
         {
-            FrequencyDeviationFromStatistics = double.NaN;
-            Tau = double.NaN;
+            FrequencyDispersionFromStatistics = double.NaN;
             CarrierFrequencyFromStatistics = double.NaN;
-            Phase = double.NaN;
-            FrequencyDeviationLSQ = double.NaN;
-            CarrierFrequencyLSQ = double.NaN;
+            FrequencyDispersionFromLSQ = double.NaN;
+            CarrierFrequencyFromLSQ = double.NaN;
+            FrequencyRangeFromStatistics = double.NaN;
         }
 
         private double[] xData;

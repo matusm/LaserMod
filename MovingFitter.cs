@@ -9,6 +9,8 @@ namespace LaserMod
         public double ModulationDepthDispersionLSQ => spMppLSQ.StandardDeviation;
         public double ModulationDepth => spMppFromStat.AverageValue;
         public double ModulationDepthDispersion => spMppFromStat.StandardDeviation;
+        public double ModulationDepthFromRange => spMppFromRange.AverageValue;
+        public double ModulationDepthDispersionFromRange => spMppFromRange.StandardDeviation;
         public double CarrierFrequency => spCarrierFromStat.AverageValue;
         public double CarrierFrequencyDispersion => spCarrierFromStat.StandardDeviation;
         public double CarrierFrequencyLSQ => spCarrierLSQ.AverageValue;
@@ -22,6 +24,7 @@ namespace LaserMod
             this.counterData = counterData;
             RawTau = rawTau;
             spMppFromStat = new StatisticPod();
+            spMppFromRange = new StatisticPod();
             spMppLSQ = new StatisticPod();   
             spCarrierLSQ = new StatisticPod();
             spCarrierFromStat = new StatisticPod();
@@ -30,11 +33,12 @@ namespace LaserMod
         public void FitWithWindowSize(int windowSize)
         {
             this.windowSize = windowSize;
-            var sineFitter = new SineFitter();
+            SineFitter sineFitter = new SineFitter();
             spMppFromStat.Restart();
             spCarrierFromStat.Restart();
             spMppLSQ.Restart();
             spCarrierLSQ.Restart();
+            spMppFromRange.Restart();
 
             double[] window = new double[windowSize];
             int runningIndex = 0;
@@ -45,10 +49,11 @@ namespace LaserMod
                 for (int i = 0; i < windowSize; i++)
                     window[i] = counterData[runningIndex + i];
                 sineFitter.EstimateParametersFrom(window, RawTau);
-                spMppFromStat.Update(sineFitter.FrequencyDeviationFromStatistics);
+                spMppFromStat.Update(sineFitter.FrequencyDispersionFromStatistics);
                 spCarrierFromStat.Update(sineFitter.CarrierFrequencyFromStatistics);
-                spMppLSQ.Update(sineFitter.FrequencyDeviationLSQ);
-                spCarrierLSQ.Update(sineFitter.CarrierFrequencyLSQ);   
+                spMppLSQ.Update(sineFitter.FrequencyDispersionFromLSQ);
+                spCarrierLSQ.Update(sineFitter.CarrierFrequencyFromLSQ);
+                spMppFromRange.Update(sineFitter.FrequencyRangeFromStatistics);
                 runningIndex += indexIncrement;
             }
         }
@@ -57,6 +62,7 @@ namespace LaserMod
         private readonly StatisticPod spMppLSQ;        
         private readonly StatisticPod spCarrierFromStat;
         private readonly StatisticPod spCarrierLSQ;
+        private readonly StatisticPod spMppFromRange;
 
         private readonly double[] counterData;
         private int windowSize;
