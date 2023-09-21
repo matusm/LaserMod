@@ -9,12 +9,6 @@ namespace LaserMod
 {
     class Program
     {
-
-        static double[] data;
-        static double rawPeriod; //TODO bad!!!
-        static ParameterContainer container;
-        static string outputFilename;
-
         static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -41,46 +35,31 @@ namespace LaserMod
             string filename = args[0];
             if (Path.GetExtension(filename) == "")
                 filename = Path.ChangeExtension(filename, ".csv");
-            outputFilename = Path.ChangeExtension(filename, "prn");
-            //ReadEvaluatePrint(filename, windowSize, outputType);
+            string outputFilename = Path.ChangeExtension(filename, "prn");
 
             double[] data = ReadDataFromFile(filename);
             double gateTime = EstimateGateTimeFromFileName(filename);
 
-            container = new ParameterContainer(gateTime);
+            ParameterContainer container = new ParameterContainer(gateTime);
 
             if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine("! Warning: gate time too long! Some parameters may be invalid!");
             }
             TotalFitter totalFitter = new TotalFitter(data);
-            FftPeriodEstimator fft = new FftPeriodEstimator(totalFitter);
-            rawPeriod = fft.RawModulationPeriod;
             container.SetParametersFromFitter(totalFitter);
-            container.SetParametersFromFitter(fft);
+            FftPeriodEstimator fftEstimator = new FftPeriodEstimator(totalFitter);
+            double rawPeriod = fftEstimator.RawModulationPeriod;
+            container.SetParametersFromFitter(fftEstimator);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, rawPeriod);
             MovingFitter movingFitter = new MovingFitter(data, rawPeriod);
             movingFitter.FitWithWindowSize(optimalWindowSize);
             container.SetParametersFromFitter(movingFitter);
 
-            PrintParameters(outputType);
+            PrintParameters(container, outputType);
         }
 
         //*********************************************************************************************
-
-        //private static void ReadEvaluatePrint(string filename, int windowSize, OutputType outputType)
-        //{
-        //    ReadData(filename);
-        //    if (container.IsGateTimeTooLong)
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("Warning: gate time too long! Some parameters may be invalid!");
-        //    }
-        //    EvaluateAll(windowSize);
-        //    int optimalWindowSize = EstimateOptimalWindowSize(windowSize, container.RawTau);
-        //    EvaluatePiecewise(optimalWindowSize, rawPeriod);
-        //    PrintParameters(outputType);
-        //}
 
         private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
         {
@@ -99,36 +78,7 @@ namespace LaserMod
             return optimalWindowSize;
         }
 
-        //private static void ReadData(string filename)
-        //{
-        //    double gateTime = EstimateGateTimeFromFileName(filename);
-        //    data = ReadDataFromFile(filename);
-        //    container = new ParameterContainer(gateTime);
-        //    container.Filename = Path.GetFileNameWithoutExtension(filename);
-        //}
-
-        private static void PrintParameters(OutputType outputType) => Console.WriteLine(container.ToOutputString(outputType));
-
-        //private static void EvaluateAll(int windowSize)
-        //{
-        //    // overall calculation
-        //    TotalFitter totalFitter = new TotalFitter(data);
-        //    FftPeriodEstimator fft = new FftPeriodEstimator(totalFitter);
-        //    rawPeriod = fft.RawModulationPeriod;
-
-        //    container.SetParametersFromFitter(totalFitter);
-        //    container.SetParametersFromFitter(fft);
-        //    // moving window calculation
-        //    EvaluatePiecewise(windowSize, rawPeriod);
-        //}
-
-        //private static void EvaluatePiecewise(int windowSize, double rawTau)
-        //{
-        //    // moving window calculation
-        //    MovingFitter movingFitter = new MovingFitter(data, rawTau);
-        //    movingFitter.FitWithWindowSize(windowSize);
-        //    container.SetParametersFromFitter(movingFitter);
-        //}
+        private static void PrintParameters(ParameterContainer container, OutputType outputType) => Console.WriteLine(container.ToOutputString(outputType));
 
         // the raw readings are corrected by the totalize error!
         private static double[] ReadDataFromFile(string filename)
