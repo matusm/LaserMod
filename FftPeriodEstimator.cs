@@ -30,7 +30,7 @@ namespace LaserMod
         private void FourierTransformData()
         {
             Complex[] buffer = LoadCounterReadings();
-            Fourier.Forward(buffer, FourierOptions.Default);
+            Fourier.Forward(buffer, FourierOptions.NumericalRecipes);
             int maxPosition = 0;
             double maxPower = 0;
             for (int i = 1; i < buffer.Length / 2; i++)

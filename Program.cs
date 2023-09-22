@@ -61,9 +61,15 @@ namespace LaserMod
 
         //*********************************************************************************************
 
+        //private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
+        //{
+        //    return (int)(rawPeriod * 20);
+        //}
+
         private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
         {
-            return (int)(rawPeriod * 100);
+            int numberPeriods = (int)Math.Round(maxWindowSize / rawPeriod);
+            return (int)(rawPeriod * numberPeriods);
         }
 
 
@@ -90,17 +96,20 @@ namespace LaserMod
         private static double[] ReadDataFromFile(string filename)
         {
             List<double> counterReadings = new List<double>();
-            StreamReader reader = new StreamReader(File.OpenRead(filename));
-            while (!reader.EndOfStream)
+            using (StreamReader reader = new StreamReader(File.OpenRead(filename)))
             {
-                string line = reader.ReadLine();
-                double y = MyParseDouble(line);
-                if (!double.IsNaN(y))
+                while (!reader.EndOfStream)
                 {
-                    counterReadings.Add(y + InstrumentConstants.TotalizeCorrection);
+                    string line = reader.ReadLine();
+                    double y = MyParseDouble(line);
+                    if (!double.IsNaN(y))
+                    {
+                        counterReadings.Add(y + InstrumentConstants.TotalizeCorrection);
+                    }
                 }
             }
-            reader.Close();
+            counterReadings.RemoveAt(counterReadings.Count-1);
+            counterReadings.RemoveAt(0);
             return counterReadings.ToArray();
         }
 
