@@ -35,13 +35,13 @@ namespace LaserMod
             string filename = args[0];
             if (Path.GetExtension(filename) == "")
                 filename = Path.ChangeExtension(filename, ".csv");
-            string outputFilename = Path.ChangeExtension(filename, "prn");
+            string outputFilename = Path.ChangeExtension(filename, ".prn");
 
             double[] data = ReadDataFromFile(filename);
             double gateTime = EstimateGateTimeFromFileName(filename);
 
             ParameterContainer container = new ParameterContainer(gateTime);
-
+            container.Filename = filename;
             if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine("! Warning: gate time too long! Some parameters may be invalid!");
@@ -63,20 +63,26 @@ namespace LaserMod
 
         private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
         {
-            double minimumFringeFraction = double.PositiveInfinity;
-            int optimalWindowSize = maxWindowSize;
-            for (int i = maxWindowSize / 10; i <= maxWindowSize; i++)
-            {
-                double fringe = i / rawPeriod;
-                double fringeFraction = Math.Abs(fringe - Math.Round(fringe));
-                if (fringeFraction <= minimumFringeFraction)
-                {
-                    minimumFringeFraction = fringeFraction;
-                    optimalWindowSize = i;
-                }
-            }
-            return optimalWindowSize;
+            return (int)(rawPeriod * 100);
         }
+
+
+        //private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
+        //{
+        //    double minimumFringeFraction = double.PositiveInfinity;
+        //    int optimalWindowSize = maxWindowSize;
+        //    for (int i = maxWindowSize / 10; i <= maxWindowSize; i++)
+        //    {
+        //        double fringe = i / rawPeriod;
+        //        double fringeFraction = Math.Abs(fringe - Math.Round(fringe));
+        //        if (fringeFraction <= minimumFringeFraction)
+        //        {
+        //            minimumFringeFraction = fringeFraction;
+        //            optimalWindowSize = i;
+        //        }
+        //    }
+        //    return optimalWindowSize;
+        //}
 
         private static void PrintParameters(ParameterContainer container, OutputType outputType) => Console.WriteLine(container.ToOutputString(outputType));
 

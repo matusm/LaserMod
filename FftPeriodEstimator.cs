@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.IO;
+using System.Numerics;
 using MathNet.Numerics.IntegralTransforms;
 
 namespace LaserMod
@@ -42,6 +43,19 @@ namespace LaserMod
                 }
             }
             RawFrequency = maxPosition;
+            _DebugLog(buffer);
+        }
+
+        private void _DebugLog(Complex[] buffer)
+        {
+            using (StreamWriter writer = new StreamWriter("FFT.csv", false))
+            {
+                for (int i = 1; i < buffer.Length / 2; i++)
+                {
+                    double power = Complex.Abs(buffer[i]);
+                    writer.WriteLine($"{i}, {power}");
+                }
+            }
         }
 
         private readonly TotalFitter totalFitter;
