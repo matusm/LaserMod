@@ -12,7 +12,6 @@ namespace LaserMod
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-            // default parameters
             // @"E:\LaserModData\BEV2\T010BEV2_A.csv";
             // @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
             int evaluationPeriods = 100;
