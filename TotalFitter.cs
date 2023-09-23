@@ -7,7 +7,6 @@ namespace LaserMod
         public double Carrier => statisticPod.AverageValue;
         public double CarrierDispersion => statisticPod.StandardDeviation;
         public int SampleSize => (int)statisticPod.SampleSize;
-        public double Range => statisticPod.Range;
         public double MinValue => statisticPod.MinimumValue;
         public double MaxValue => statisticPod.MaximumValue;
         public double[] ReducedCounterData { get; }

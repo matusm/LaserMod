@@ -11,7 +11,6 @@ namespace LaserMod
         public double CarrierFrequencyFromLSQ { get; private set; }
         public double FrequencyDispersionFromStatistics { get; private set; }
         public double CarrierFrequencyFromStatistics { get; private set; }
-        public double FrequencyRangeFromStatistics { get; private set; }
 
         // rawTau // period of modulation frequency in units of samples
         public void EstimateParametersFrom(double[] data, double rawTau)
@@ -22,7 +21,6 @@ namespace LaserMod
             TotalFitter totFit = new TotalFitter(data);
             FrequencyDispersionFromStatistics = totFit.CarrierDispersion * Math.Sqrt(2.0) * 2; // assuming an U-distribution
             CarrierFrequencyFromStatistics = totFit.Carrier;
-            FrequencyRangeFromStatistics = totFit.Range;
 
             // generate x,y data array
             xData = new double[data.Length];
@@ -74,7 +72,6 @@ namespace LaserMod
             CarrierFrequencyFromStatistics = double.NaN;
             FrequencyDispersionFromLSQ = double.NaN;
             CarrierFrequencyFromLSQ = double.NaN;
-            FrequencyRangeFromStatistics = double.NaN;
         }
 
         private double[] xData;

@@ -7,10 +7,7 @@ namespace LaserMod
     public class ParameterContainer
     {
 
-
         public ParameterContainer(double gateTime) => GateTime = gateTime;
-
-
 
         public string Filename { get; set; }
         public double GateTime { get; } // in s
@@ -31,8 +28,6 @@ namespace LaserMod
         public double MppDispStat => TotalizeToHz(movFitter.ModulationDepthDispersion);
         public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection;
         public double MppDispLSQ => TotalizeToHz(movFitter.ModulationDepthDispersionLSQ);
-        public double MppRange => TotalizeToHz(movFitter.ModulationDepthFromRange) * SincCorrection;
-        public double MppDispRange => TotalizeToHz(movFitter.ModulationDepthDispersionFromRange);
         public double Mpp => (MppLSQ + MppStat) / 2.0;
         public double MppUncert => Math.Abs(MppStat - MppLSQ);
 
@@ -66,7 +61,6 @@ namespace LaserMod
                     sb.AppendLine($"Modulation Period:         {Tau * 1e6:F1} µs");
                     sb.AppendLine($"Modulation frequency:      {ModulationFrequency * 1e-3:F3} kHz");
                     sb.AppendLine($"Correction factor:         {SincCorrection:F3}");
-                    //sb.AppendLine($"Modulation width (range):  {MppRange * 1e-6:F3} ± {MppDispRange * 1e-6:F3} MHz");
                     sb.AppendLine($"Modulation width (stat):   {MppStat * 1e-6:F3} ± {MppDispStat * 1e-6:F3} MHz");
                     sb.AppendLine($"Modulation width (LSQ):    {MppLSQ * 1e-6:F3} ± {MppDispLSQ * 1e-6:F3} MHz");
                     sb.AppendLine("================================================");
