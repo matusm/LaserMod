@@ -11,35 +11,16 @@ namespace LaserMod
         static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+            MyCommandLine options = new MyCommandLine(args);
 
             // @"E:\LaserModData\BEV2\T010BEV2_A.csv";
             // @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
-            int evaluationPeriods = 100;
-            OutputType outputType = OutputType.Succinct;
 
-            // command line logic
-            // two arguments: first (file name), second (window size / mod period)
-            // one argument: file name
-            // no argument: exit
-            if (args.Length == 0)
-            {
-                Console.WriteLine("! no file name provided !");
-                return;
-            }
-            if (args.Length == 2)
-            {
-                evaluationPeriods = int.Parse(args[1]);
-            }
-            string filename = args[0];
-            if (Path.GetExtension(filename) == "")
-                filename = Path.ChangeExtension(filename, ".csv");
-            string outputFilename = Path.ChangeExtension(filename, ".prn");
-
-            double[] data = ReadDataFromFile(filename);
-            double gateTime = EstimateGateTimeFromFileName(filename);
+            double[] data = ReadDataFromFile(options.InputFilename);
+            double gateTime = EstimateGateTimeFromFileName(options.InputFilename);
 
             ParameterContainer container = new ParameterContainer(gateTime);
-            container.Filename = Path.GetFileName(filename);
+            container.Filename = Path.GetFileName(options.InputFilename);
             if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine("! Warning: gate time too long! Some parameters may be invalid!");
@@ -52,15 +33,15 @@ namespace LaserMod
             double rawPeriod = fftEstimator.RawModulationPeriod;
             container.SetParametersFromFitter(fftEstimator);
 
-            int windowSize = (int)(rawPeriod * evaluationPeriods);
+            int windowSize = (int)(rawPeriod * options.EvaluationPeriods);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, rawPeriod);
 
             MovingFitter movingFitter = new MovingFitter(data, rawPeriod);
             movingFitter.FitWithWindowSize(optimalWindowSize);
             container.SetParametersFromFitter(movingFitter);
 
-            PrintParameters(container, outputType);
-            WriteParameters(container, OutputType.Verbose, outputFilename);
+            PrintParameters(container, options.Verbosity);
+            WriteParameters(container, OutputType.Verbose, options.OutputFilename);
 
         }
 

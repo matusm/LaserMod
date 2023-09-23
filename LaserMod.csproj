@@ -54,12 +54,13 @@
   <ItemGroup>
     <Compile Include="Fitters\FftPeriodEstimator.cs" />
     <Compile Include="InstrumentConstants.cs" />
+    <Compile Include="MyCommandLine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fitters\SineFitter.cs" />
     <Compile Include="Fitters\MovingFitter.cs" />
     <Compile Include="Fitters\TotalFitter.cs" />
-    <Compile Include="ParameterContainer.cs" />
+    <Compile Include="Fitters\ParameterContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
