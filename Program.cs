@@ -1,5 +1,4 @@
-﻿using At.Matus.StatisticPod;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -16,11 +15,11 @@ namespace LaserMod
             // default parameters
             // @"E:\LaserModData\BEV2\T010BEV2_A.csv";
             // @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
-            int windowSize = 1000;
-            OutputType outputType = OutputType.Verbose;
+            int evaluationPeriods = 100;
+            OutputType outputType = OutputType.Succinct;
 
             // command line logic
-            // two arguments: first file name, second window size
+            // two arguments: first (file name), second (window size / mod period)
             // one argument: file name
             // no argument: exit
             if (args.Length == 0)
@@ -30,7 +29,7 @@ namespace LaserMod
             }
             if (args.Length == 2)
             {
-                windowSize = int.Parse(args[1]);
+                evaluationPeriods = int.Parse(args[1]);
             }
             string filename = args[0];
             if (Path.GetExtension(filename) == "")
@@ -41,58 +40,67 @@ namespace LaserMod
             double gateTime = EstimateGateTimeFromFileName(filename);
 
             ParameterContainer container = new ParameterContainer(gateTime);
-            container.Filename = filename;
+            container.Filename = Path.GetFileName(filename);
             if (container.IsGateTimeTooLong)
             {
                 Console.WriteLine("! Warning: gate time too long! Some parameters may be invalid!");
             }
+
             TotalFitter totalFitter = new TotalFitter(data);
             container.SetParametersFromFitter(totalFitter);
+
             FftPeriodEstimator fftEstimator = new FftPeriodEstimator(totalFitter);
             double rawPeriod = fftEstimator.RawModulationPeriod;
             container.SetParametersFromFitter(fftEstimator);
+
+            int windowSize = (int)(rawPeriod * evaluationPeriods);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, rawPeriod);
+
             MovingFitter movingFitter = new MovingFitter(data, rawPeriod);
             movingFitter.FitWithWindowSize(optimalWindowSize);
             container.SetParametersFromFitter(movingFitter);
 
             PrintParameters(container, outputType);
+            WriteParameters(container, OutputType.Verbose, outputFilename);
+
         }
 
         //*********************************************************************************************
 
-        //private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
-        //{
-        //    return (int)(rawPeriod * 20);
-        //}
-
         private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
         {
-            int numberPeriods = (int)Math.Round(maxWindowSize / rawPeriod);
-            return (int)(rawPeriod * numberPeriods);
+            double minimumFringeFraction = double.PositiveInfinity;
+            int optimalWindowSize = maxWindowSize;
+            for (int testSize = maxWindowSize / 2; testSize <= maxWindowSize * 2; testSize++)
+            {
+                double fringe = testSize / rawPeriod;
+                double fringeFraction = Math.Abs(fringe - Math.Round(fringe));
+                if (fringeFraction <= minimumFringeFraction)
+                {
+                    minimumFringeFraction = fringeFraction;
+                    optimalWindowSize = testSize;
+                }
+            }
+            //Console.WriteLine($"debug - tau:{rawPeriod:F4}  optSize:{optimalWindowSize}  minff:{minimumFringeFraction:F4}");
+            return optimalWindowSize;
         }
 
+        private static void PrintParameters(ParameterContainer container, OutputType outputType)
+        {
+            Console.WriteLine();
+            Console.WriteLine(container.ToOutputString(outputType));
+        }
 
-        //private static int EstimateOptimalWindowSize(int maxWindowSize, double rawPeriod)
-        //{
-        //    double minimumFringeFraction = double.PositiveInfinity;
-        //    int optimalWindowSize = maxWindowSize;
-        //    for (int i = maxWindowSize / 10; i <= maxWindowSize; i++)
-        //    {
-        //        double fringe = i / rawPeriod;
-        //        double fringeFraction = Math.Abs(fringe - Math.Round(fringe));
-        //        if (fringeFraction <= minimumFringeFraction)
-        //        {
-        //            minimumFringeFraction = fringeFraction;
-        //            optimalWindowSize = i;
-        //        }
-        //    }
-        //    return optimalWindowSize;
-        //}
-
-        private static void PrintParameters(ParameterContainer container, OutputType outputType) => Console.WriteLine(container.ToOutputString(outputType));
+        private static void WriteParameters(ParameterContainer container, OutputType outputType, string outputFilename)
+        {
+            using(StreamWriter writer = new StreamWriter(outputFilename, false))
+            {
+                writer.Write(container.ToOutputString(outputType));
+            }
+        }
 
         // the raw readings are corrected by the totalize error!
+        // the first and the last line are discarded
         private static double[] ReadDataFromFile(string filename)
         {
             List<double> counterReadings = new List<double>();
