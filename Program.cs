@@ -104,8 +104,9 @@ namespace LaserMod
         private static double[] ReadDataFromFile(string filename)
         {
             List<double> counterReadings = new List<double>();
-            using (StreamReader reader = new StreamReader(File.OpenRead(filename)))
+            try
             {
+                StreamReader reader = new StreamReader(File.OpenRead(filename));
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
@@ -115,6 +116,12 @@ namespace LaserMod
                         counterReadings.Add(y + InstrumentConstants.TotalizeCorrection);
                     }
                 }
+                reader.Close();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"! can not read {filename} !");
+                Environment.Exit(1);
             }
             counterReadings.RemoveAt(counterReadings.Count-1);
             counterReadings.RemoveAt(0);
