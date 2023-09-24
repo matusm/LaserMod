@@ -32,6 +32,10 @@ namespace LaserMod
                     case "-v-":
                         Verbosity = OutputType.Succinct;
                         break;
+                    case "-c":
+                    case "-c+":
+                        Verbosity = OutputType.Characterize;
+                        break;
                     case "--help":
                         PrintHelpAndExit(0);
                         break;
@@ -95,6 +99,7 @@ namespace LaserMod
             Console.WriteLine($"options:");
             Console.WriteLine($"   -v     : verbosity for console output ({Verbosity})");
             Console.WriteLine($"   -n     : number of periods to evaluate ({EvaluationPeriods})");
+            Console.WriteLine($"   -c     : experimental display ({Verbosity})");
             Console.WriteLine($"   --help : this help screen");
             Console.WriteLine();
             Environment.Exit(exitcode);
