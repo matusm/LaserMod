@@ -13,12 +13,10 @@ namespace LaserMod
             GenerateFileNames();
         }
 
-
         public OutputType Verbosity { get; private set; } = OutputType.Succinct;
         public int EvaluationPeriods { get; private set; } = 100;
         public string InputFilename { get; private set; }
         public string OutputFilename { get; private set; }
-
 
         private void ParseCommandLine(string[] args)
         {

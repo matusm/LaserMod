@@ -40,8 +40,8 @@ namespace LaserMod
             movingFitter.FitWithWindowSize(optimalWindowSize);
             container.SetParametersFromFitter(movingFitter);
 
-            PrintParameters(container, options.Verbosity);
-            WriteParameters(container, OutputType.Verbose, options.OutputFilename);
+            DisplayResults(container, options.Verbosity);
+            WriteResults(container, OutputType.Verbose, options.OutputFilename);
 
         }
 
@@ -65,13 +65,13 @@ namespace LaserMod
             return optimalWindowSize;
         }
 
-        private static void PrintParameters(ParameterContainer container, OutputType outputType)
+        private static void DisplayResults(ParameterContainer container, OutputType outputType)
         {
             Console.WriteLine();
             Console.WriteLine(container.ToOutputString(outputType));
         }
 
-        private static void WriteParameters(ParameterContainer container, OutputType outputType, string outputFilename)
+        private static void WriteResults(ParameterContainer container, OutputType outputType, string outputFilename)
         {
             using(StreamWriter writer = new StreamWriter(outputFilename, false))
             {
@@ -120,13 +120,4 @@ namespace LaserMod
         private static double MyParseDouble(string line) => double.TryParse(line, out double value) ? value : double.NaN;
     }
 
-    public enum OutputType
-    {
-        None,
-        SingleLine,
-        CsvLine,
-        CsvHeader,
-        Verbose,
-        Succinct
-    }
 }

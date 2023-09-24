@@ -24,9 +24,9 @@ namespace LaserMod
         public double CarrierDispStat => TotalizeToHz(movFitter.CarrierFrequencyDispersion);
         public double CarrierLSQ => TotalizeToHz(movFitter.CarrierFrequencyLSQ);
         public double CarrierDispLSQ => TotalizeToHz(movFitter.CarrierFrequencyDispersionLSQ);
-        public double MppStat => TotalizeToHz(movFitter.ModulationDepth) * SincCorrection;
+        public double MppStat => TotalizeToHz(movFitter.ModulationDepth) * SincCorrection + InstrumentConstants.MppStatCorrection;
         public double MppDispStat => TotalizeToHz(movFitter.ModulationDepthDispersion);
-        public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection;
+        public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection + InstrumentConstants.MppLsqCorrection;
         public double MppDispLSQ => TotalizeToHz(movFitter.ModulationDepthDispersionLSQ);
         public double Mpp => (MppLSQ + MppStat) / 2.0;
         public double MppUncert => Math.Abs(MppStat - MppLSQ);
@@ -95,4 +95,15 @@ namespace LaserMod
         private FftPeriodEstimator fft;
 
     }
+
+    public enum OutputType
+    {
+        None,
+        SingleLine,
+        CsvLine,
+        CsvHeader,
+        Verbose,
+        Succinct
+    }
+
 }

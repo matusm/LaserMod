@@ -13,5 +13,12 @@
 
         // Hz/point - legacy, no longer used
         public static readonly double ModulationFrequencyCalFactor = 40848.0222;
+
+        // the estimated modulation width is of by this value in Hz (5100)
+        public static readonly double MppStatCorrection = 0;
+
+        // the estimated modulation width is of by this value in Hz (7000 + 6e-5*f_^2=
+        public static readonly double MppLsqCorrection = 0;
+
     }
 }
