@@ -69,8 +69,8 @@ namespace LaserMod
                     sb.AppendLine($"Modulation width:          {Mpp * 1e-6:F3} ± {MppUncert * 1e-6:F3} MHz");
                     sb.AppendLine("===============================================================");
                     return sb.ToString();
-                case OutputType.Characterize:
-                    return $"{Filename,-20}  Mpp_stat = {MppStat * 1e-6:F4} MHz    Mpp_LSQ = {MppLSQ * 1e-6:F4} MHz";
+                case OutputType.TestCase:
+                    return TestCsv();
                 case OutputType.SingleLine:
                     return $"{Filename,-20} {GateTime * 1e6,5:F0} {WindowSize,6} {CarrierTotal * 1e-6,6:F4} {CarrierDispTotal * 1e-6,6:F4} {CarrierLSQ * 1e-6,6:F4} {CarrierDispLSQ * 1e-6,6:F4} {MppStat * 1e-6,6:F4} {MppDispStat * 1e-6,6:F4} {MppLSQ * 1e-6,6:F4} {MppDispLSQ * 1e-6,6:F4} {Tau * 1e6,5:F1} {ModulationFrequency * 1e-3,6:F4} {Mpp * 1e-6,6:F4} {MppUncert * 1e-6,6:F4}";
                 case OutputType.CsvLine:
@@ -94,6 +94,24 @@ namespace LaserMod
             return Math.Abs((relGateTime * Math.PI) / Math.Sin(relGateTime * Math.PI));
         }
 
+        private string TestCsv()
+        {
+            int gate, fmod, mpp;
+            string[] tokens = Filename.Split(new char[] { 'T', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                gate = int.Parse(tokens[0]);
+                fmod = int.Parse(tokens[1]);
+                mpp = int.Parse(tokens[2]);
+            }
+            catch (Exception)
+            {
+                return $"Invalid filename syntax {Filename}";
+            }
+            string line = $"{Filename}, {gate,2}, {fmod,4}, {mpp}, {ModulationFrequency:F1}, {MppStat/1e6:F4}, {MppLSQ / 1e6:F4}, {ModulationFrequency-fmod:F1}, {MppStat/1e6-mpp:F4}, {MppLSQ/ 1e6-mpp:F4}";
+            return line;
+        }
+
         private TotalFitter totFitter;
         private MovingFitter movFitter;
         private FftPeriodEstimator fft;
@@ -107,7 +125,7 @@ namespace LaserMod
         CsvLine,
         CsvHeader,
         Verbose,
-        Characterize,
+        TestCase,
         Succinct
     }
 

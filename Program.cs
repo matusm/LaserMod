@@ -67,7 +67,7 @@ namespace LaserMod
 
         private static void DisplayResults(ParameterContainer container, OutputType outputType)
         {
-            Console.WriteLine();
+            if (outputType == OutputType.Verbose) Console.WriteLine();
             Console.WriteLine(container.ToOutputString(outputType));
         }
 
