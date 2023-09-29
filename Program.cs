@@ -28,17 +28,25 @@ namespace LaserMod
 
             TotalFitter totalFitter = new TotalFitter(data);
             container.SetParametersFromFitter(totalFitter);
+            FftTwoPeriodEstimator periodEstimator = new FftTwoPeriodEstimator(totalFitter);
 
             //Test suite
-            FftTwoPeriodEstimator fft2 = new FftTwoPeriodEstimator(totalFitter);
-            if (!fft2.SingleModulation)
+            if (!periodEstimator.SingleModulation)
             {
-                Console.WriteLine($"Frequency 1: {fft2.ModulationFrequency1:F1} Hz");
-                Console.WriteLine($"Frequency 2: {fft2.ModulationFrequency2:F1} Hz");
+                Console.WriteLine($"Frequency 1: {periodEstimator.ModulationFrequency1:F1} Hz");
+                Console.WriteLine($"Frequency 2: {periodEstimator.ModulationFrequency2:F1} Hz");
+
+                TwoSineFitter twoSine = new TwoSineFitter();
+                twoSine.EstimateParametersFrom(data, periodEstimator.RawModulationPeriod1, periodEstimator.RawModulationPeriod2);
+
+                Console.WriteLine($"Mpp1: {1e-6 * twoSine.Mpp1FromLSQ/gateTime:F3} MHz");
+                Console.WriteLine($"Mpp2: {1e-6 * twoSine.Mpp2FromLSQ/gateTime:F3} MHz");
                 return;
             }
-            double rawPeriod = fft2.RawModulationPeriod1;
-            container.SetParametersFromFitter(fft2);
+            // end test
+
+            double rawPeriod = periodEstimator.RawModulationPeriod1;
+            container.SetParametersFromFitter(periodEstimator);
 
             int windowSize = (int)(rawPeriod * options.EvaluationPeriods);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, rawPeriod);
