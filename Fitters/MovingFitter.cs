@@ -45,9 +45,9 @@ namespace LaserMod
                 for (int i = 0; i < windowSize; i++)
                     window[i] = counterData[runningIndex + i];
                 sineFitter.EstimateParametersFrom(window, RawTau);
-                spMppFromStat.Update(sineFitter.FrequencyDispersionFromStatistics);
+                spMppFromStat.Update(sineFitter.MppFromStatistics);
                 spCarrierFromStat.Update(sineFitter.CarrierFrequencyFromStatistics);
-                spMppLSQ.Update(sineFitter.FrequencyDispersionFromLSQ);
+                spMppLSQ.Update(sineFitter.MppFromLSQ);
                 spCarrierLSQ.Update(sineFitter.CarrierFrequencyFromLSQ);
                 runningIndex += indexIncrement;
             }
