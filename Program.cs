@@ -29,6 +29,13 @@ namespace LaserMod
             TotalFitter totalFitter = new TotalFitter(data);
             container.SetParametersFromFitter(totalFitter);
 
+            //Test suite
+            FftTwoPeriodEstimator fft2 = new FftTwoPeriodEstimator(totalFitter);
+            Console.WriteLine($"Frequency 1: {fft2.ModulationFrequency1:F1} Hz");
+            Console.WriteLine($"Frequency 2: {fft2.ModulationFrequency2:F1} Hz");
+
+            return; 
+
             FftPeriodEstimator fftEstimator = new FftPeriodEstimator(totalFitter);
             double rawPeriod = fftEstimator.RawModulationPeriod;
             container.SetParametersFromFitter(fftEstimator);

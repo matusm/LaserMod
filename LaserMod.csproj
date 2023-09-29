@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fitters\FftTwoPeriodEstimator.cs" />
     <Compile Include="Fitters\FftPeriodEstimator.cs" />
     <Compile Include="InstrumentConstants.cs" />
     <Compile Include="MyCommandLine.cs" />
