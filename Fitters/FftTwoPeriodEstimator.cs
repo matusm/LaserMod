@@ -7,6 +7,7 @@ namespace LaserMod
 {
     public class FftTwoPeriodEstimator
     {
+        public bool SingleModulation => RawFrequency1 == RawFrequency2;
 
         public double ModulationFrequency1 => RawFrequency1 / InstrumentConstants.FftCalFactor;
         public double ModulationPeriod1 => 1 / ModulationFrequency1;
@@ -18,14 +19,13 @@ namespace LaserMod
         public double RawModulationPeriod2 => 1e6 / RawFrequency2;    // in units of samples
         public int RawFrequency2 { get; private set; }
 
-
         public FftTwoPeriodEstimator(TotalFitter totalFitter)
         {
             this.totalFitter = totalFitter;
-            Complex[] buffer = FourierTransformData();
-            _DebugLog(buffer);
-            double cutOff = MaximumPower(buffer)/10.0;
-            AnalyzeSpectrum(buffer, cutOff);
+            Complex[] spectrum = FourierTransformData();
+            _DebugLog(spectrum);
+            double cutOff = GetMaximumPower(spectrum) * InstrumentConstants.PeakRegionCutoffFactor;
+            AnalyzeSpectrum(spectrum, cutOff);
         }
 
         private Complex[] LoadCounterReadings()
@@ -45,12 +45,12 @@ namespace LaserMod
             return buffer;
         }
 
-        private double MaximumPower(Complex[] buffer)
+        private double GetMaximumPower(Complex[] spectrum)
         {
             double maxPower = 0;
-            for (int i = 0; i < buffer.Length/1; i++)
+            for (int i = 0; i < spectrum.Length/1; i++)
             {
-                double power = Complex.Abs(buffer[i]);
+                double power = Complex.Abs(spectrum[i]);
                 if (power >= maxPower)
                 {
                     maxPower = power;
@@ -59,73 +59,78 @@ namespace LaserMod
             return maxPower;
         }
 
-        private void AnalyzeSpectrum(Complex[] buffer, double cutOffPower)
+        private void AnalyzeSpectrum(Complex[] spectrum, double cutOffPower)
         {
-            List<int> lowPart = new List<int>();
-            List<int> highPart = new List<int>();
-            bool flag = false;
-            for (int i = 1; i < buffer.Length / 2; i++)
-            {
-                double power = Complex.Abs(buffer[i]);
-                if (power > cutOffPower)
-                {
-                    flag = true;
-                    lowPart.Add(i);
-                }
-                else
-                {
-                    if (flag == true) break;
-                }
-            }
-            flag = false;
-            for (int i = buffer.Length / 2; i>1 ; i--)
-            {
-                double power = Complex.Abs(buffer[i]);
-                if (power > cutOffPower)
-                {
-                    flag = true;
-                    highPart.Add(i);
-                }
-                else
-                {
-                    if (flag == true) break;
-                }
-            }
-
-            int maxPosition = 0;
-            double maxPower = 0;
-            foreach (int index in lowPart)
-            {
-                double power = Complex.Abs(buffer[index]);
-                if (power >= maxPower)
-                {
-                    maxPower = power;
-                    maxPosition = index;
-                }
-            }
-            RawFrequency1 = maxPosition;
-
-            maxPosition = 0;
-            maxPower = 0;
-            foreach (int index in highPart)
-            {
-                double power = Complex.Abs(buffer[index]);
-                if (power >= maxPower)
-                {
-                    maxPower = power;
-                    maxPosition = index;
-                }
-            }
-            RawFrequency2 = maxPosition;
+            List<int> lowPart = SegmentSpectrumFromBelow(spectrum, cutOffPower);
+            RawFrequency1 = GetRawPeakFrequency(spectrum, lowPart);
+            
+            List<int> highPart = SegmentSpectrumFromAbove(spectrum, cutOffPower);
+            RawFrequency2 = GetRawPeakFrequency(spectrum, highPart);
         }
 
-        private void _DebugLog(Complex[] buffer)
+        private List<int> SegmentSpectrumFromBelow(Complex[] spectrum, double cutOff)
+        {
+            List<int> region = new List<int>();
+            bool flag = false;
+            for (int i = spectrum.Length / 2; i > 1; i--)
+            {
+                double power = Complex.Abs(spectrum[i]);
+                if (power > cutOff)
+                {
+                    flag = true;
+                    region.Add(i);
+                }
+                else
+                {
+                    if (flag == true) break;
+                }
+            }
+            return region;
+        }
+
+        private List<int> SegmentSpectrumFromAbove(Complex[] spectrum, double cutOff)
+        {
+            List<int> region = new List<int>();
+            bool flag = false;
+            for (int i = 1; i < spectrum.Length / 2; i++)
+            {
+                double power = Complex.Abs(spectrum[i]);
+                if (power > cutOff)
+                {
+                    flag = true;
+                    region.Add(i);
+                }
+                else
+                {
+                    if (flag == true) break;
+                }
+            }
+            return region;
+        }
+
+        private int GetRawPeakFrequency(Complex[] spectrum, List<int> region)
+        {
+            int maxPosition = 0;
+            double maxPower = 0;
+            foreach (int index in region)
+            {
+                double power = Complex.Abs(spectrum[index]);
+                if (power >= maxPower)
+                {
+                    maxPower = power;
+                    maxPosition = index;
+                }
+            }
+            return maxPosition;
+        }
+
+        private void _DebugLog(Complex[] spectrum)
         {
             using (StreamWriter writer = new StreamWriter("FFT2.csv", false))
             {
-                for (int i = 1; i < buffer.Length / 2; i++)
+                for (int i = 1; i < spectrum.Length / 2; i++)
                 {
-                    double power = Complex.Abs(buffer[i]);
+                    double power = Complex.Abs(spectrum[i]);
                     writer.WriteLine($"{i}, {power}");
                 }
             }

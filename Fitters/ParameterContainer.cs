@@ -14,9 +14,9 @@ namespace LaserMod
         public bool IsGateTimeTooLong => GateTime > InstrumentConstants.MaximumGateTime;
         public int WindowSize => movFitter.WindowSize;
         public double Resolution => 1 / GateTime; // in Hz
-        public double ModulationFrequency => fft.ModulationFrequency;
-        public double Tau => fft.ModulationPeriod;
-        public double RawTau => fft.RawModulationPeriod;
+        public double ModulationFrequency => fft2.ModulationFrequency1;
+        public double Tau => fft2.ModulationPeriod1;
+        public double RawTau => fft2.RawModulationPeriod1;
         public double SincCorrection => SincCorrFactor(GateTime, Tau);
 
         public double CarrierTotal => TotalizeToHz(totFitter.Carrier);
@@ -37,7 +37,7 @@ namespace LaserMod
 
         public void SetParametersFromFitter(MovingFitter movFitter) => this.movFitter = movFitter;
 
-        public void SetParametersFromFitter(FftPeriodEstimator fft) => this.fft = fft;
+        public void SetParametersFromFitter(FftTwoPeriodEstimator fft2) => this.fft2 = fft2;
 
         public string ToOutputString(OutputType outputType)
         {
@@ -114,7 +114,7 @@ namespace LaserMod
 
         private TotalFitter totFitter;
         private MovingFitter movFitter;
-        private FftPeriodEstimator fft;
+        private FftTwoPeriodEstimator fft2;
 
     }
 

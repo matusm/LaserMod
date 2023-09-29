@@ -14,6 +14,9 @@
         // Hz/point - legacy, no longer used
         public static readonly double ModulationFrequencyCalFactor = 40848.0222;
 
+        // FFT peak region cutoff factor (relativ to maximum power)
+        public static readonly double PeakRegionCutoffFactor = 0.1;
+
         // the estimated modulation width is of by this value in Hz (5100)
         public static readonly double MppStatCorrection = 0;
 

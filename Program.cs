@@ -31,14 +31,14 @@ namespace LaserMod
 
             //Test suite
             FftTwoPeriodEstimator fft2 = new FftTwoPeriodEstimator(totalFitter);
-            Console.WriteLine($"Frequency 1: {fft2.ModulationFrequency1:F1} Hz");
-            Console.WriteLine($"Frequency 2: {fft2.ModulationFrequency2:F1} Hz");
-
-            return; 
-
-            FftPeriodEstimator fftEstimator = new FftPeriodEstimator(totalFitter);
-            double rawPeriod = fftEstimator.RawModulationPeriod;
-            container.SetParametersFromFitter(fftEstimator);
+            if (!fft2.SingleModulation)
+            {
+                Console.WriteLine($"Frequency 1: {fft2.ModulationFrequency1:F1} Hz");
+                Console.WriteLine($"Frequency 2: {fft2.ModulationFrequency2:F1} Hz");
+                return;
+            }
+            double rawPeriod = fft2.RawModulationPeriod1;
+            container.SetParametersFromFitter(fft2);
 
             int windowSize = (int)(rawPeriod * options.EvaluationPeriods);
             int optimalWindowSize = EstimateOptimalWindowSize(windowSize, rawPeriod);
