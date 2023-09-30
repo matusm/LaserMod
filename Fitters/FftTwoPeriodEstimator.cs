@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using MathNet.Numerics.IntegralTransforms;
 
@@ -23,7 +22,6 @@ namespace LaserMod
         {
             this.totalFitter = totalFitter;
             Complex[] spectrum = FourierTransformData();
-            // _DebugLog(spectrum);
             double cutOff = GetMaximumPower(spectrum) * InstrumentConstants.PeakRegionCutoffFactor;
             AnalyzeSpectrum(spectrum, cutOff);
         }
@@ -122,18 +120,6 @@ namespace LaserMod
                 }
             }
             return maxPosition;
-        }
-
-        private void _DebugLog(Complex[] spectrum)
-        {
-            using (StreamWriter writer = new StreamWriter("FFT2.csv", false))
-            {
-                for (int i = 1; i < spectrum.Length / 2; i++)
-                {
-                    double power = Complex.Abs(spectrum[i]);
-                    writer.WriteLine($"{i}, {power}");
-                }
-            }
         }
 
         private readonly TotalFitter totalFitter;
