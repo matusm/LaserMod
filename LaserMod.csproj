@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Fitters\FftTwoPeriodEstimator.cs" />
     <Compile Include="InstrumentConstants.cs" />
+    <Compile Include="Fitters\ModulationType.cs" />
     <Compile Include="MyCommandLine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
