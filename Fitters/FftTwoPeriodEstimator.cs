@@ -10,12 +10,12 @@ namespace LaserMod
 
         public double ModulationFrequency1 => RawFrequency1 / InstrumentConstants.FftCalFactor;
         public double ModulationPeriod1 => 1 / ModulationFrequency1;
-        public double RawModulationPeriod1 => 1e6 / RawFrequency1;    // in units of samples
+        public double RawModulationPeriod1 => (double)totalFitter.SampleSize / RawFrequency1;    // in units of samples
         public int RawFrequency1 { get; private set; }
 
         public double ModulationFrequency2 => RawFrequency2 / InstrumentConstants.FftCalFactor;
         public double ModulationPeriod2 => 1 / ModulationFrequency2;
-        public double RawModulationPeriod2 => 1e6 / RawFrequency2;    // in units of samples
+        public double RawModulationPeriod2 => (double)totalFitter.SampleSize / RawFrequency2;    // in units of samples
         public int RawFrequency2 { get; private set; }
 
         public FftTwoPeriodEstimator(TotalFitter totalFitter)
