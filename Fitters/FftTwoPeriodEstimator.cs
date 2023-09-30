@@ -23,7 +23,7 @@ namespace LaserMod
         {
             this.totalFitter = totalFitter;
             Complex[] spectrum = FourierTransformData();
-            _DebugLog(spectrum);
+            // _DebugLog(spectrum);
             double cutOff = GetMaximumPower(spectrum) * InstrumentConstants.PeakRegionCutoffFactor;
             AnalyzeSpectrum(spectrum, cutOff);
         }
