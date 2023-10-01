@@ -43,7 +43,6 @@ namespace LaserMod
         public double Mpp2DispLSQ => TotalizeToHz(movFitter.ModulationDepth2DispersionLSQ);
         public double Mpp => (MppLSQ + MppStat) / 2.0;
         public double MppUncert => Math.Abs(MppStat - MppLSQ);
-
         
         public void SetParametersFromFitter(TotalFitter totFitter) => this.totFitter = totFitter;
 
@@ -68,15 +67,11 @@ namespace LaserMod
                         return VerboseOutputDoubleMod();
                     return string.Empty;
                 case OutputType.TestCase:
-                    return TestCsv();
-                case OutputType.SingleLine:
-                    return $"{Filename,-20} {GateTime * 1e6,5:F0} {WindowSize,6} {CarrierTotal * 1e-6,6:F4} {CarrierDispTotal * 1e-6,6:F4} {CarrierLSQ * 1e-6,6:F4} {CarrierDispLSQ * 1e-6,6:F4} {MppStat * 1e-6,6:F4} {MppDispStat * 1e-6,6:F4} {MppLSQ * 1e-6,6:F4} {MppDispLSQ * 1e-6,6:F4} {Tau * 1e6,5:F1} {ModulationFrequency * 1e-3,6:F4} {Mpp * 1e-6,6:F4} {MppUncert * 1e-6,6:F4}";
-                case OutputType.CsvLine:
-                    return $"{Filename},{GateTime * 1e6:F0},{WindowSize},{CarrierTotal * 1e-6:F4},{CarrierDispTotal * 1e-6:F4},{CarrierLSQ * 1e-6:F4},{CarrierDispLSQ * 1e-6:F4},{MppStat * 1e-6:F4},{MppDispStat * 1e-6:F4},{MppLSQ * 1e-6:F4},{MppDispLSQ * 1e-6:F4},{Tau * 1e6:F1},{ModulationFrequency * 1e-3:F4},{Mpp * 1e-6:F4},{MppUncert * 1e-6:F4}";
-                case OutputType.CsvHeader:
-                    return "filename,gate time / µs,windows size,overall beat / MHz,overall standard deviation / MHz," +
-                        "carrier from LSQ fit / MHz,standard deviation of carrier from LSQ fit / MHz,Mpp from statistics / MHz,Mpp from statistics standard deviation / MHz," +
-                        "Mpp LSQ / MHz,Mpp LSQ standard deviation / MHz,tau / µs,f_mod / kHz,Mpp / MHz,U(Mpp) / MHz";
+                    if (movFitter.Modulation == ModulationType.Single)
+                        return TestOutputSingleModCsv();
+                    if (movFitter.Modulation == ModulationType.Double)
+                        return TestOutputDoubleModCsv();
+                    return string.Empty;
                 default:
                     return string.Empty;
             }
@@ -156,7 +151,7 @@ namespace LaserMod
             return Math.Abs((relGateTime * Math.PI) / Math.Sin(relGateTime * Math.PI));
         }
 
-        private string TestCsv()
+        private string TestOutputSingleModCsv()
         {
             int gate, fmod, mpp;
             string[] tokens = Filename.Split(new char[] { 'T', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
@@ -174,6 +169,11 @@ namespace LaserMod
             return line;
         }
 
+        private string TestOutputDoubleModCsv()
+        {
+            return "Test case not implemented yet for double modulated data!";
+        }
+
         private TotalFitter totFitter;
         private MovingFitter movFitter;
         private FftTwoPeriodEstimator fftEstimator;
@@ -183,12 +183,8 @@ namespace LaserMod
     public enum OutputType
     {
         None,
-        SingleLine,
-        CsvLine,
-        CsvHeader,
         Verbose,
         TestCase,
         Succinct
     }
-
 }
