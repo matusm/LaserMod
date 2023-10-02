@@ -33,13 +33,13 @@ namespace LaserMod
         public double CarrierDispStat => TotalizeToHz(movFitter.CarrierFrequencyDispersion);
         public double CarrierLSQ => TotalizeToHz(movFitter.CarrierFrequencyLSQ);
         public double CarrierDispLSQ => TotalizeToHz(movFitter.CarrierFrequencyDispersionLSQ);
-        public double MppStat => TotalizeToHz(movFitter.ModulationDepth) * SincCorrection + MppStatEmpiricalCorrection(TotalizeToHz(movFitter.ModulationDepth));
+        public double MppStat => TotalizeToHz(movFitter.ModulationDepth) * SincCorrection + InstrumentConstants.EmpiricalCorrectionForMppStat(TotalizeToHz(movFitter.ModulationDepth));
         public double MppDispStat => TotalizeToHz(movFitter.ModulationDepthDispersion);
-        public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection + MppLSQEmpiricalCorrection(TotalizeToHz(movFitter.ModulationDepthLSQ), ModulationFrequency);
+        public double MppLSQ => TotalizeToHz(movFitter.ModulationDepthLSQ) * SincCorrection + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepthLSQ), ModulationFrequency);
         public double MppDispLSQ => TotalizeToHz(movFitter.ModulationDepthDispersionLSQ);
-        public double Mpp1LSQ => TotalizeToHz(movFitter.ModulationDepth1LSQ) * SincCorrection1 + MppLSQEmpiricalCorrection(TotalizeToHz(movFitter.ModulationDepth1LSQ), ModulationFrequency1);
+        public double Mpp1LSQ => TotalizeToHz(movFitter.ModulationDepth1LSQ) * SincCorrection1 + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepth1LSQ), ModulationFrequency1);
         public double Mpp1DispLSQ => TotalizeToHz(movFitter.ModulationDepth1DispersionLSQ);
-        public double Mpp2LSQ => TotalizeToHz(movFitter.ModulationDepth2LSQ) * SincCorrection2 + MppLSQEmpiricalCorrection(TotalizeToHz(movFitter.ModulationDepth2LSQ), ModulationFrequency2);
+        public double Mpp2LSQ => TotalizeToHz(movFitter.ModulationDepth2LSQ) * SincCorrection2 + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepth2LSQ), ModulationFrequency2);
         public double Mpp2DispLSQ => TotalizeToHz(movFitter.ModulationDepth2DispersionLSQ);
         public double Mpp => (MppLSQ + MppStat) / 2.0;
         public double MppUncert => Math.Abs(MppStat - MppLSQ);
@@ -173,23 +173,6 @@ namespace LaserMod
         {
             return "Test case not implemented yet for double modulated data!";
         }
-
-        private double MppStatEmpiricalCorrection(double mpp)
-        {
-            // empirical correction, all values in Hz
-            // must be added to Mpp
-            return -1900 + 0.0008 * mpp;
-        }
-
-        private double MppLSQEmpiricalCorrection(double mpp, double fmod)
-        {
-            double c = 4e-5 - 0.0007 * mpp * 1e-6;
-            double a = 1e-12 - 7e-12 * mpp * 1e-6;
-            double corr = - 1e6 * (c + a * fmod * fmod);
-            return corr;
-        }
-
-
 
         private TotalFitter totFitter;
         private MovingFitter movFitter;

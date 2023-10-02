@@ -6,6 +6,7 @@
         public static readonly double MaximumGateTime = 22e-6;
 
         // the counter readings are smaller by this value on average
+        // this is an empirical value!
         public static readonly double TotalizeCorrection = 0.286;
 
         // ? 1e6/ModulationFrequencyCalFactor ?
@@ -17,11 +18,27 @@
         // FFT peak region cutoff factor (relativ to maximum power)
         public static readonly double PeakRegionCutoffFactor = 0.1;
 
-        // the estimated modulation width is of by this value in Hz (5100)
-        public static readonly double MppStatCorrection = 0;
+        // For the statistical technique the estimated modulation width must be corrected by this value
+        // Correction by adding this value to the raw Mpp value
+        // All values in Hz!
+        public static double EmpiricalCorrectionForMppStat(double mpp)
+        {
+            return -1900 + 0.0008 * mpp;
+        }
 
-        // the estimated modulation width is of by this value in Hz (7000 + 6e-5*f_^2=
-        public static readonly double MppLsqCorrection = 0;
+        // For the LSQ technique the estimated modulation width must be corrected by this value
+        // Correction by adding this value to the raw Mpp value
+        // All values in Hz!
+        public static double EmpiricalCorrectionForMppLSQ(double mpp, double fmod)
+        {
+            double c = 4e-5 - 0.0007 * mpp * 1e-6;
+            double a = 1e-12 - 7e-12 * mpp * 1e-6;
+            double corr = -1e6 * (c + a * fmod * fmod);
+            return corr;
+        }
+
+
+
 
     }
 }
