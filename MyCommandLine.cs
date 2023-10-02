@@ -15,6 +15,7 @@ namespace LaserMod
 
         public OutputType Verbosity { get; private set; } = OutputType.Succinct;
         public int EvaluationPeriods { get; private set; } = InstrumentConstants.EvaluationPeriods;
+        public string UserComment { get; private set; } = string.Empty;
         public string InputFilename { get; private set; }
         public string OutputFilename { get; private set; }
 
@@ -81,6 +82,11 @@ namespace LaserMod
                 if(arg.StartsWith("-n"))
                 {
                     EvaluationPeriods = int.Parse(arg.Substring(2));
+                    return;
+                }
+                if(arg.StartsWith("--comment="))
+                {
+                    UserComment = arg.Substring(10).Replace("\"", "");
                     return;
                 }
                 Console.WriteLine($"unknown option: {arg}");
