@@ -34,9 +34,8 @@
         // All values in Hz!
         public static double EmpiricalCorrectionForMppLSQ(double mpp, double fmod)
         {
-            double c = 4e-5 - 0.0007 * mpp * 1e-6;
-            double a = 1e-12 - 7e-12 * mpp * 1e-6;
-            double corr = -1e6 * (c + a * fmod * fmod) + 290;
+            double fmodSquare = fmod * fmod;
+            double corr = 250 + 0.0007 * mpp + 7e-12 * mpp * fmodSquare - 1e-6 * fmodSquare;
             return corr;
         }
 
