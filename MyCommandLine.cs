@@ -14,7 +14,7 @@ namespace LaserMod
         }
 
         public OutputType Verbosity { get; private set; } = OutputType.Succinct;
-        public int EvaluationPeriods { get; private set; } = 100;
+        public int EvaluationPeriods { get; private set; } = InstrumentConstants.EvaluationPeriods;
         public string InputFilename { get; private set; }
         public string OutputFilename { get; private set; }
 
