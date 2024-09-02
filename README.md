@@ -1,13 +1,30 @@
-LaserMod - Measure the Frequency Modulation Depth
-=================================================
+LaserMod - Laser Frequency Modulation Depth
+===========================================
 
 ## Overview
 
-A standalone command line app to evaluate  the portable optometer P-9710 by [Gigahertz-Optik GmbH](https://www.gigahertz-optik.com/) via its RS232 interface.
+A standalone command line app to evaluate the frequency modulation depth of frequency stabilized lasers during their measurement with an optical frequency comb generator. A very specific setup is neccessary in order to use this app.
 
-Its main usage is to perform photo current measurements for a predetermined number of samples. This process can be triggered manually whenever needed. A timestamp, average value, dispersion parameters and the corresponding photometric quantity value is logged in a file.
+The main application is in the calibration of He-Ne laser with an internal iodine cell, stabilized using the third harmonic detection technique according to the [Mise en pratique for the definition of the metre](https://www.bipm.org/en/publications/mises-en-pratique). Due to the working principle the laser radiation is frequency modulated. The peak-to-peack modulation width is an important parameter for the operation of this standards. The numerous methods proposed for measuring this parameter have their advantages and disadvantages. This method can be used during the actual frequency calibration without additional optical setup.
 
-## Command Line Usage
+## Preconditions
+
+The only supported device is the Agilent/[Keysight](https://www.keysight.com/) 53230A Universal frequency counter. The very similar 53220A is not useable. The counter must be operated under specific settings which are summarized below.
+
+The input signal must be a sufficiently optimized beat signal between the laser to be tested and an optical frequency comb. The comb should be referenced by a source with high short time (< 1 s) stability. In the author's laboratory an active hydrogen maser works well while a standard Cs clock produces less reliably results. Referencing the comb to a high stability optical frequency is possible, also.
+
+The data is recorded by the frequency counter on an external USB storage device and evaluated offline using this app. A direct interface beween counter and computer is not currently planned.
+
+## Usage
+
+The measurement data is stored on the USB flash drive as a simple CSV-file. No metadata, like counter settings, is stored in this file. Since the gate time is a absolutely necessary information, it must be encoded in the file name! The first integer (from the left) is interpreted as the gate time in µs, all subsequent numbers are ignored. The following examples show the usage of this syntax:
+
+`T10BEV1f_06` : gate time 10 µs
+`measurement22SIOS02-test` : gate time 22 µs
+`BEV2d_005ms` : gate time 2 µs - probably not intended!
+
+
+### Command Line Usage
 
 ```
 LaserMod input-filename [output-filename] [options]
@@ -17,9 +34,9 @@ LaserMod input-filename [output-filename] [options]
 
 `-v` : verbatim output.
 
-`-n` : Evaluation length in periods.
+`-v-`: succinct output.
 
-`--test` : specia option for numerical tests.
+`--test` : special option for numerical tests.
 
 `--help` : as the name implies.
 
@@ -35,28 +52,32 @@ optometer --port="COM3" --logfile="C:\temp\MyLogFile.txt"
 ```
 Use 10 samples per measurement (default) and use the given serial port. The full path of the log file is given. If the directory `C:\temp` does not exist, the programm will crash.
 
+## Counter settings
+Refer to the A53230A manual on how to modify settings.
 
-## Log File Entries
+### Input
+* Coupling: AC
+* Impedance: 50 Ohm
+* Range: 5 V
+* BW Limit: Off
+* Probe: None
+* Level: 50 %, Pos, Auto On, Noise Rej Off
 
-On start the identifications and parameters of both, the instrument and the connected detector, are queried and logged. An important parameter is the detector sensitivity factor which is stored in the detector's EEPROM. This sensitivity factor is used to calculate the photometric quantity value from the measured photo current. The mesurement uncertainty of the sensitivity factor is not accessible in the EEPROM, thus the uncertainty of the photometric quantity can not be estimated. The value following the symbol ± is the standard uncertainty originating from the combined standard uncertainty as discussed below.
+### Mode
+* Totalize
+* Gated
+* Gate: 0.001 ms to 0.022 ms (0.010 ms prefered)
+* Gate Src: Timed
 
-* Average value: arithmetic mean of the *n* photo current readings, in nA.                 
+### Data Log
+* File Select: External (file name must encode the gate time!)
+* t-Stamp: Off
+* Duration: Readings
+* Set Count: 1 000 000
 
-* The instrument measurement range for this average value
-
-* Standard deviation: The standard deviation of the *n* photo current readings, in nA. (Not the standard deviation of the mean!)
-
-* Specification uncertainty: The specification given by the manufacturer for the actual average photo current. It is stated as a standard uncertainty. 
-
-* Combined standard uncertainty: combination of the standard deviation and the specification uncertainty.
-
-* Photometric value: calculated value using the detector sensitivity factor
-
+## Mathematical background
+TBA
 
 ## Dependencies
-
-Bev.Instruments.P9710: https://github.com/matusm/Bev.Instruments.P9710
-
 At.Matus.StatisticPod: https://github.com/matusm/At.Matus.StatisticPod
 
-CommandLineParser: https://github.com/commandlineparser/commandline 
