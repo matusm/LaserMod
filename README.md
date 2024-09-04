@@ -33,14 +33,14 @@ The recorded file must be processed with the LaserMod app to obtain the frequenc
 ### Command Line Usage
 
 ```
-LaserMod input-filename [output-filename] [options]
+LaserMod  [options] input-filename [output-filename]
 ```
 
 ### Options
 
 `-v` : verbatim output.
 
-`-v-`: succinct output.
+`-n`: initial window size.
 
 `--test` : special option for numerical tests.
 
@@ -49,14 +49,14 @@ LaserMod input-filename [output-filename] [options]
 ### Examples
 
 ```
-LaserMod -n100 -p"/dev/tty.usbserial-FTY594BQ" --comment="test-mac"
+LaserMod T10_CCL-K11_FSB_20240904_103049
 ```
-Use 20 samples per measurement, write a comment in the log file, and use the given serial port. The log file has the default name `optometer.log` and is located in the current working directory.
+Processes the file T10_CCL-K11_FSB_20240904_103049.csv and when successful, writes the results in file T10_CCL-K11_FSB_20240904_103049.prn in the current working directory. Only the value of the modulation width is displayed. The gate time is interpreted as 10 µs. The time stamp was added to the file name by the counter.
 
 ```
-optometer --port="COM3" --logfile="C:\temp\MyLogFile.txt"
+LaserMod -v -n1000 gate5_BEV1d_01 BEV1mod01
 ```
-Use 10 samples per measurement (default) and use the given serial port. The full path of the log file is given. If the directory `C:\temp` does not exist, the programm will crash.
+Processes the file gate5_BEV1d_01.csv and when successful, writes the results in file BEV1mod01.prn in the current working directory. All evaluated parameters are displayed (verbatim). The gate time is interpreted as 5 µs.
 
 Counter settings
 ----------------
@@ -79,12 +79,16 @@ Refer to the A53230A manual on how to modify settings.
 
 ### Data Log
 * File Select: External (file name must encode the gate time!)
-* t-Stamp: Off
+* t-Stamp: On (Off for shorter file names)
 * Duration: Readings
 * Set Count: 1 000 000
 
 Mathematical background
 -----------------------
+
+TBA
+
+### Empirical corrections
 
 TBA
 
