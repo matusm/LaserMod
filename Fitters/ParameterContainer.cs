@@ -39,11 +39,12 @@ namespace LaserMod
         public double MppDispLSQ => TotalizeToHz(movFitter.ModulationDepthDispersionLSQ);
         public double Mpp1LSQ => TotalizeToHz(movFitter.ModulationDepth1LSQ) * SincCorrection1 + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepth1LSQ), ModulationFrequency1);
         public double Mpp1DispLSQ => TotalizeToHz(movFitter.ModulationDepth1DispersionLSQ);
-        public double Mpp2LSQ => TotalizeToHz(movFitter.ModulationDepth2LSQ) * SincCorrection2 + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepth2LSQ), ModulationFrequency2);
+        public double Mpp2LSQ => (TotalizeToHz(movFitter.ModulationDepth2LSQ) * SincCorrection2) + InstrumentConstants.EmpiricalCorrectionForMppLSQ(TotalizeToHz(movFitter.ModulationDepth2LSQ), ModulationFrequency2);
         public double Mpp2DispLSQ => TotalizeToHz(movFitter.ModulationDepth2DispersionLSQ);
         public double Mpp => (MppLSQ + MppStat) / 2.0;
-        public double MppUncert => Math.Abs(MppStat - MppLSQ);
-        
+        public double MppUncert => EvaluateUncertainty();
+
+
         public void SetParametersFromFitter(TotalFitter totFitter) => this.totFitter = totFitter;
 
         public void SetParametersFromFitter(MovingFitter movFitter) => this.movFitter = movFitter;
@@ -149,6 +150,20 @@ namespace LaserMod
             if (gateTime > InstrumentConstants.MaximumGateTime)
                 return double.NaN;
             return Math.Abs((relGateTime * Math.PI) / Math.Sin(relGateTime * Math.PI));
+        }
+
+        // standard uncertainty of the mean (of MppStat and MppLSQ) combined with a dark uncertainty
+        // the dark uncertainty ensures the compatibility of both Mpp
+        private double EvaluateUncertainty()
+        {
+            double dx = Math.Abs(MppStat - MppLSQ);
+            double vdx = MppDispStat * MppDispStat + MppDispLSQ * MppDispLSQ;
+            double dc = dx * dx / 4 - vdx;
+            double udark = 0.0;
+            if (dc > 0)
+                udark = Math.Sqrt(dc);
+            double uMpp = Math.Sqrt(vdx / 2 + udark * udark);
+            return uMpp;
         }
 
         private string TestOutputSingleModCsv()
