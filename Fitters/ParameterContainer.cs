@@ -164,7 +164,7 @@ namespace LaserMod
             if (dc > 0)
                 udark = Math.Sqrt(dc);
             double uMpp = Math.Sqrt(vdx / 2 + udark * udark);
-
+            if (uMpp < 1000.0) uMpp = 1000.0; // uncertainty must be at least 1 kHz
             return uMpp;
         }
 
