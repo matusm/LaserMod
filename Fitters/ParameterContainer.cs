@@ -91,7 +91,7 @@ namespace LaserMod
             sb.AppendLine($"File name:                 {Filename}");
             if(timeStampParser.HasTimeStamp)
             {
-                sb.AppendLine($"Timestamp (MJD):           {timeStampParser.TimeStampMjd:F5} d");
+                sb.AppendLine($"Timestamp (MJD):           {timeStampParser.TimeStampMjd:F4} d");
             }
             sb.AppendLine($"Gate time:                 {GateTime * 1e6:F0} µs");
             sb.AppendLine($"Frequency resolution:      {Resolution * 1e-6:F3} MHz");
@@ -164,6 +164,7 @@ namespace LaserMod
             if (dc > 0)
                 udark = Math.Sqrt(dc);
             double uMpp = Math.Sqrt(vdx / 2 + udark * udark);
+
             return uMpp;
         }
 
