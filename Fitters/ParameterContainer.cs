@@ -82,7 +82,7 @@ namespace LaserMod
 
         private string SuccinctOutputDoubleMod() => $"{Filename}  ->  Mpp(1) = {Mpp1LSQ * 1e-6:F3} ± {Mpp1DispLSQ * 1e-6:F3} MHz   Mpp(2) = {Mpp2LSQ * 1e-6:F3} ± {Mpp2DispLSQ * 1e-6:F3} MHz";
 
-        private string VerboseOutputDoubleMod()
+        private string VerboseOutputCommon()
         {
             StringBuilder sb = new StringBuilder();
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -96,7 +96,14 @@ namespace LaserMod
             sb.AppendLine($"Maximum raw reading:       {totFitter.MaxValue:F0}");
             sb.AppendLine($"Carrier frequency (tot):   {CarrierTotal * 1e-6:F3} ± {CarrierDispTotal * 1e-6:F3} MHz");
             sb.AppendLine($"Carrier frequency (stat):  {CarrierStat * 1e-6:F3} ± {CarrierDispStat * 1e-6:F3} MHz");
-            sb.AppendLine($"Carrier frequency (LSQ):   {CarrierLSQ * 1e-6:F3} ± {CarrierDispLSQ * 1e-6:F3} MHz");
+            sb.Append($"Carrier frequency (LSQ):   {CarrierLSQ * 1e-6:F3} ± {CarrierDispLSQ * 1e-6:F3} MHz");
+            return sb.ToString();
+        }
+
+        private string VerboseOutputDoubleMod()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(VerboseOutputCommon());
             sb.AppendLine("===============================================================");
             sb.AppendLine("Laser 1");
             sb.AppendLine($"  Modulation Period:       {Tau1 * 1e6:F1} µs");
@@ -118,18 +125,7 @@ namespace LaserMod
         private string VerboseOutputSingleMod()
         {
             StringBuilder sb = new StringBuilder();
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            sb.AppendLine($"Program version:           {assembly.GetName().Name} {assembly.GetName().Version.ToString(3)}");
-            sb.AppendLine($"File name:                 {Filename}");
-            sb.AppendLine($"Gate time:                 {GateTime * 1e6:F0} µs");
-            sb.AppendLine($"Frequency resolution:      {Resolution * 1e-6:F3} MHz");
-            sb.AppendLine($"Window size:               {WindowSize} (in counter samples)");
-            sb.AppendLine($"Number of counter samples: {totFitter.SampleSize}");
-            sb.AppendLine($"Minimum raw reading:       {totFitter.MinValue:F0}");
-            sb.AppendLine($"Maximum raw reading:       {totFitter.MaxValue:F0}");
-            sb.AppendLine($"Carrier frequency (tot):   {CarrierTotal * 1e-6:F3} ± {CarrierDispTotal * 1e-6:F3} MHz");
-            sb.AppendLine($"Carrier frequency (stat):  {CarrierStat * 1e-6:F3} ± {CarrierDispStat * 1e-6:F3} MHz");
-            sb.AppendLine($"Carrier frequency (LSQ):   {CarrierLSQ * 1e-6:F3} ± {CarrierDispLSQ * 1e-6:F3} MHz");
+            sb.AppendLine(VerboseOutputCommon());
             sb.AppendLine($"Modulation Period:         {Tau * 1e6:F1} µs");
             sb.AppendLine($"Modulation Period:         {RawTau:F3} (in counter samples)");
             sb.AppendLine($"Modulation frequency:      {ModulationFrequency * 1e-3:F3} kHz");
