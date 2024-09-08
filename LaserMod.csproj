@@ -63,6 +63,7 @@
     <Compile Include="Fitters\TotalFitter.cs" />
     <Compile Include="Fitters\ParameterContainer.cs" />
     <Compile Include="Fitters\TwoSineFitter.cs" />
+    <Compile Include="TimeStampParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

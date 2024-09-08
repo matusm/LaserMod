@@ -84,10 +84,15 @@ namespace LaserMod
 
         private string VerboseOutputCommon()
         {
+            TimeStampParser timeStampParser = new TimeStampParser(Filename);
             StringBuilder sb = new StringBuilder();
             Assembly assembly = Assembly.GetExecutingAssembly();
             sb.AppendLine($"Program version:           {assembly.GetName().Name} {assembly.GetName().Version.ToString(3)}");
             sb.AppendLine($"File name:                 {Filename}");
+            if(timeStampParser.HasTimeStamp)
+            {
+                sb.AppendLine($"Timestamp (MJD):           {timeStampParser.TimeStampMjd:F5} d");
+            }
             sb.AppendLine($"Gate time:                 {GateTime * 1e6:F0} µs");
             sb.AppendLine($"Frequency resolution:      {Resolution * 1e-6:F3} MHz");
             sb.AppendLine($"Window size:               {WindowSize} (in counter samples)");
