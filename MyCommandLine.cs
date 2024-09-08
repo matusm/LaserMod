@@ -36,6 +36,9 @@ namespace LaserMod
                     case "--test":
                         Verbosity = OutputType.TestCase;
                         break;
+                    case "--csv":
+                        Verbosity = OutputType.Csv;
+                        break;
                     case "--help":
                         PrintHelpAndExit(0);
                         break;
@@ -102,9 +105,10 @@ namespace LaserMod
             Console.WriteLine($"Usage: {Assembly.GetExecutingAssembly().GetName().Name} filename [filename] [options]");
             Console.WriteLine();
             Console.WriteLine($"options:");
-            Console.WriteLine($"   -v     : verbosity for console output ({Verbosity})");
+            Console.WriteLine($"   -v     : verbosity for console output");
             Console.WriteLine($"   -n     : number of periods to evaluate ({EvaluationPeriods})");
-            Console.WriteLine($"   --test : test case ({Verbosity})");
+            Console.WriteLine($"   --csv  : output for csv file");
+            Console.WriteLine($"   --test : mode for validation use");
             Console.WriteLine($"   --help : this help screen");
             Console.WriteLine();
             Environment.Exit(exitcode);

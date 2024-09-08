@@ -25,7 +25,10 @@ namespace LaserMod
         private void SplitBaseName()
         {
             if (BaseName.Length < postfixLength + 1)
+            {
+                Prefix = BaseName;
                 return;
+            }
             Postfix = BaseName.Remove(0, BaseName.Length - postfixLength);
             Prefix = BaseName.Substring(0, BaseName.Length - postfixLength);
         }

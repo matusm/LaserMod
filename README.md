@@ -42,7 +42,9 @@ LaserMod  [options] input-filename [output-filename]
 
 `-n`: initial window size.
 
-`--test` : special option for numerical tests.
+`--csv` : single output line useful for CSV files.
+
+`--test` : single output line and file name parsing for validation purposes.
 
 `--help` : as the name implies.
 
@@ -51,7 +53,7 @@ LaserMod  [options] input-filename [output-filename]
 ```
 LaserMod T10_CCL-K11_FSB_20240904_103049
 ```
-Processes the file T10_CCL-K11_FSB_20240904_103049.csv and when successful, writes the results in file T10_CCL-K11_FSB_20240904_103049.prn in the current working directory. Only the value of the modulation width is displayed. The gate time is interpreted as 10 µs. The time stamp was added to the file name by the counter.
+Processes the file T10_CCL-K11_FSB_20240904_103049.csv and when successful, writes the results in file T10_CCL-K11_FSB_20240904_103049.prn in the current working directory. Only the value of the modulation width is displayed. The gate time is interpreted as 10 µs. The time stamp was added to the file name by the counter and is stored as a modified Julian date.
 
 ```
 LaserMod -v -n1000 gate5_BEV1d_01 BEV1mod01

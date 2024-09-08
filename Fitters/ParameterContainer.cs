@@ -67,6 +67,12 @@ namespace LaserMod
                     if (movFitter.Modulation == ModulationType.Double)
                         return VerboseOutputDoubleMod();
                     return string.Empty;
+                case OutputType.Csv:
+                    if (movFitter.Modulation == ModulationType.Single)
+                        return CsvOutputSingleMod();
+                    if (movFitter.Modulation == ModulationType.Double)
+                        return CsvOutputDoubleMod();
+                    return string.Empty;
                 case OutputType.TestCase:
                     if (movFitter.Modulation == ModulationType.Single)
                         return TestOutputSingleModCsv();
@@ -143,6 +149,43 @@ namespace LaserMod
             return sb.ToString();
         }
 
+        private string CsvOutputSingleMod()
+        {
+            // filename, MJD, Mpp/Mhz, u(Mpp)/Mhz
+            TimeStampParser timeStampParser = new TimeStampParser(Filename);
+            return $"{timeStampParser.BaseName}, {timeStampParser.TimeStampMjd:F5}, {Mpp * 1e-6:F4}, {MppUncert * 1e-6:F4}";
+        }
+
+        private string CsvOutputDoubleMod()
+        {
+            // filename, MJD, Mpp1/Mhz, u(Mpp1)/Mhz, Mpp2/Mhz, u(Mpp2)/Mhz
+            TimeStampParser timeStampParser = new TimeStampParser(Filename);
+            return $"{timeStampParser.BaseName}, {timeStampParser.TimeStampMjd:F5}, {Mpp1LSQ * 1e-6:F4}, {Mpp1DispLSQ * 1e-6:F4}, {Mpp2LSQ * 1e-6:F4}, {Mpp2DispLSQ * 1e-6:F4}";
+        }
+
+        private string TestOutputSingleModCsv()
+        {
+            int gate, fmod, mpp;
+            string[] tokens = Filename.Split(new char[] { 'T', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                gate = int.Parse(tokens[0]);
+                fmod = int.Parse(tokens[1]);
+                mpp = int.Parse(tokens[2]);
+            }
+            catch (Exception)
+            {
+                return $"Invalid filename syntax {Filename}";
+            }
+            string line = $"{Filename}, {gate,2}, {fmod,4}, {mpp}, {ModulationFrequency:F1}, {MppStat / 1e6:F4}, {MppLSQ / 1e6:F4}, {ModulationFrequency - fmod:F1}, {MppStat / 1e6 - mpp:F4}, {MppLSQ / 1e6 - mpp:F4}";
+            return line;
+        }
+
+        private string TestOutputDoubleModCsv()
+        {
+            return "Test case not implemented yet for double modulated data!";
+        }
+
         private double TotalizeToHz(double counterReading) => counterReading / GateTime;
 
         private double SincCorrFactor(double gateTime, double modulationPeriod)
@@ -168,29 +211,6 @@ namespace LaserMod
             return uMpp;
         }
 
-        private string TestOutputSingleModCsv()
-        {
-            int gate, fmod, mpp;
-            string[] tokens = Filename.Split(new char[] { 'T', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
-            try
-            {
-                gate = int.Parse(tokens[0]);
-                fmod = int.Parse(tokens[1]);
-                mpp = int.Parse(tokens[2]);
-            }
-            catch (Exception)
-            {
-                return $"Invalid filename syntax {Filename}";
-            }
-            string line = $"{Filename}, {gate,2}, {fmod,4}, {mpp}, {ModulationFrequency:F1}, {MppStat/1e6:F4}, {MppLSQ / 1e6:F4}, {ModulationFrequency-fmod:F1}, {MppStat/1e6-mpp:F4}, {MppLSQ/ 1e6-mpp:F4}";
-            return line;
-        }
-
-        private string TestOutputDoubleModCsv()
-        {
-            return "Test case not implemented yet for double modulated data!";
-        }
-
         private TotalFitter totFitter;
         private MovingFitter movFitter;
         private FftTwoPeriodEstimator fftEstimator;
@@ -202,6 +222,7 @@ namespace LaserMod
         None,
         Verbose,
         TestCase,
-        Succinct
+        Succinct,
+        Csv
     }
 }
