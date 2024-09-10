@@ -15,7 +15,9 @@ The only supported device is the Agilent/[Keysight](https://www.keysight.com/) 5
 
 The input signal must be a sufficiently optimized beat signal between the laser to be tested and an optical frequency comb. The comb should be referenced by a source with high short time (< 1 s) stability. In the author's laboratory an active hydrogen maser works well while a standard Cs clock produces less reliably results. Referencing the comb to a high stability optical frequency is possible, also.
 
-The data is recorded by the frequency counter on an external USB storage device and evaluated offline using this app. A direct interface beween counter and computer is not currently planned.
+Since version 2.5 this app can also analyse the beat signal between two lasers (i.e. without frequency comb). Provided that the two modulation frequencies differ sufficiently, both modulation widths are evaluated.
+
+The data is recorded by the frequency counter on an external USB flash drive and evaluated offline using this app. A direct interface beween counter and computer is not currently planned.
 
 The modulation frequency of the laser to be tested must be lower than approximately 10 kHz.
 
@@ -44,6 +46,10 @@ LaserMod  [options] input-filename [output-filename]
 
 `--csv` : single output line useful for CSV files.
 
+`--header` : static header CSV files. For laser vs comb, no input file necessary.
+
+`--header2` : static header CSV files. For laser1 vs laser2, no input file necessary.
+
 `--test` : single output line and file name parsing for validation purposes.
 
 `--help` : as the name implies.
@@ -63,7 +69,7 @@ Processes the file gate5_BEV1d_01.csv and when successful, writes the results in
 Counter settings
 ----------------
 
-Refer to the A53230A manual on how to modify settings.
+Refer to the 53230A manual for details.
 
 ### Input
 * Coupling: AC
@@ -76,7 +82,7 @@ Refer to the A53230A manual on how to modify settings.
 ### Mode
 * Totalize
 * Gated
-* Gate: 0.001 ms to 0.022 ms (0.010 ms prefered)
+* Gate: 0.002 ms to 0.022 ms (0.010 ms prefered)
 * Gate Src: Timed
 
 ### Data Log
@@ -91,6 +97,11 @@ Mathematical background
 TBA
 
 ### Empirical corrections
+
+TBA
+
+Installation
+------------
 
 TBA
 

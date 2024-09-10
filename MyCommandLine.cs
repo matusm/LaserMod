@@ -39,6 +39,13 @@ namespace LaserMod
                     case "--csv":
                         Verbosity = OutputType.Csv;
                         break;
+                    case "--header":
+                    case "--header1":
+                        Verbosity = OutputType.CsvHeaderSingle;
+                        break;
+                    case "--header2":
+                        Verbosity = OutputType.CsvHeaderDouble;
+                        break;
                     case "--help":
                         PrintHelpAndExit(0);
                         break;
@@ -54,6 +61,8 @@ namespace LaserMod
             switch (fileNames.Count)
             {
                 case 0:
+                    if (Verbosity == OutputType.CsvHeaderSingle || Verbosity == OutputType.CsvHeaderDouble)
+                        break;
                     Console.WriteLine("no file name given!");
                     PrintHelpAndExit(1);
                     break;
@@ -105,11 +114,13 @@ namespace LaserMod
             Console.WriteLine($"Usage: {Assembly.GetExecutingAssembly().GetName().Name} filename [filename] [options]");
             Console.WriteLine();
             Console.WriteLine($"options:");
-            Console.WriteLine($"   -v     : verbosity for console output");
-            Console.WriteLine($"   -n     : number of periods to evaluate ({EvaluationPeriods})");
-            Console.WriteLine($"   --csv  : output for csv file");
-            Console.WriteLine($"   --test : mode for validation use");
-            Console.WriteLine($"   --help : this help screen");
+            Console.WriteLine($"   -v        : verbosity for console output");
+            Console.WriteLine($"   -n        : number of periods to evaluate ({EvaluationPeriods})");
+            Console.WriteLine($"   --csv     : output for csv file");
+            Console.WriteLine($"   --header  : static header for csv file");
+            Console.WriteLine($"   --header2 : static header for csv file");
+            Console.WriteLine($"   --test    : mode for validation use");
+            Console.WriteLine($"   --help    : this help screen");
             Console.WriteLine();
             Environment.Exit(exitcode);
         }

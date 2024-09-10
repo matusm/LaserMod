@@ -223,6 +223,8 @@ namespace LaserMod
         Verbose,
         TestCase,
         Succinct,
-        Csv
+        Csv,
+        CsvHeaderSingle,
+        CsvHeaderDouble
     }
 }

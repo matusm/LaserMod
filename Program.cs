@@ -13,6 +13,17 @@ namespace LaserMod
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             MyCommandLine options = new MyCommandLine(args);
 
+            if (options.Verbosity == OutputType.CsvHeaderSingle)
+            {
+                Console.WriteLine("filename, MJD, Mpp/Mhz, u(Mpp)/Mhz");
+                return;
+            }
+            if (options.Verbosity == OutputType.CsvHeaderDouble)
+            {
+                Console.WriteLine("filename, MJD, Mpp1/Mhz, u(Mpp1)/Mhz, Mpp2/Mhz, u(Mpp2)/Mhz");
+                return;
+            }
+
             // @"E:\LaserModData\BEV2\T010BEV2_A.csv";
             // @"/Volumes/NO NAME/LaserModData/S01/T020S01.csv";
 
@@ -69,7 +80,6 @@ namespace LaserMod
                     optimalWindowSize = testSize;
                 }
             }
-            //Console.WriteLine($"debug - tau:{rawPeriod:F4}  optSize:{optimalWindowSize}  minff:{minimumFringeFraction:F4}");
             return optimalWindowSize;
         }
 
