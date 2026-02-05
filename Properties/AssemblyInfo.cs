@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LaserMod")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BEV")]
+[assembly: AssemblyCompany("private")]
 [assembly: AssemblyProduct("LaserMod")]
-[assembly: AssemblyCopyright("Michael Matus © BEV 2021")]
+[assembly: AssemblyCopyright("Michael Matus © 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.7.0.0")]
-[assembly: AssemblyFileVersion("2.7.0.0")]
+[assembly: AssemblyVersion("2.7.0.1")]
+[assembly: AssemblyFileVersion("2.7.0.1")]
