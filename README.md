@@ -101,7 +101,7 @@ TBA
 ### Empirical corrections
 
 Three empirical corrections are applied to compensate for systematic offsets in the measurement. The actual values of the corrections are determined by calibration measurement with synthetic signals produced by a digital signal generator.
-Respective correction values are stored in the ststic class `InstrumentConstants` and can be changed by the user if necessary.
+Respective correction values are stored in the static class `InstrumentConstants` and can be changed by the user if necessary.
 
 #### Totalize correction
 
