@@ -94,9 +94,9 @@ Refer to the 53230A manual for details.
 Mathematical background
 -----------------------
 
-The mathematical background of the evaluation method is described in the following sections. The actual implementation can be found in the source code.
+The mathematical background of the evaluation method is scetched in the following. The actual implementation can be found in the source code.
 
-The principle is based on recording the beat frequency at very short and regular intervals. The modulation depth is then derived from this data by fitting it to a sine function. This fitting process occurs in two steps. First, the modulation frequency is determined through Fourier analysis, and this value is fixed (and not changed) for the actual sine fit. This method can be extended analogously to a beat signal between two frequency-modulated lasers. The software automatically detects which of the two scenarios is present.
+The principle is based on recording the beat frequency at very short and regular intervals. The modulation depth is then derived from this data by fitting it to a sine function. This fitting process occurs in two steps. First, the modulation frequency is determined through Fourier analysis, and this value is fixed (and not fitted) for the actual sine fit. This method can be extended analogously to a beat signal between two frequency-modulated lasers. The software automatically detects which of the two scenarios is present.
 
 An alternative method simply determines the standard deviation of the data for a singly modulated signal (statistical technique). For a purely sinusoidal frequency-modulated signal, the modulation depth is simply the square root of 2 times the standard deviation.
 
@@ -104,8 +104,7 @@ Both methods are not performed on the entire dataset (usually 1,000,000 points),
 
 Finally, a sinc correction compensates for the modulation depth attenuation (aperture effect) caused by the finite gating time.
 
-Empirical corrections
----------------------
+### Empirical corrections
 
 Three empirical corrections are applied to compensate for systematic offsets in the measurement and/or instrument. The actual values of the corrections are determined by calibration measurement with synthetic signals produced by a digital signal generator.
 Respective correction values are stored in the static class `InstrumentConstants` and can be changed by the user if necessary.
