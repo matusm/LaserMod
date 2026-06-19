@@ -6,16 +6,16 @@ Overview
 
 A standalone command line app to evaluate the frequency modulation depth of frequency stabilized lasers during their measurement with an optical frequency comb generator. A very specific setup is neccessary in order to use this app.
 
-The main application is in the calibration of He-Ne laser with an internal iodine cell, stabilized using the third harmonic detection technique according to the [Mise en pratique for the definition of the metre](https://www.bipm.org/en/publications/mises-en-pratique). Due to the working principle the laser radiation is frequency modulated. The peak-to-peack modulation width is an important parameter for the operation of this standards. The numerous methods proposed for measuring this parameter have their advantages and disadvantages. This method can be used during the actual frequency calibration without additional optical setup.
+The main application is the calibration of He-Ne laser with an internal iodine cell, stabilized using the third harmonic detection technique according to the [Mise en pratique for the definition of the metre](https://www.bipm.org/en/publications/mises-en-pratique). Due to the working principle the laser radiation is frequency modulated. The peak-to-peack modulation width is an important parameter for the operation of this standards. The numerous methods proposed for measuring this parameter have their advantages and disadvantages. The method preseted here can be used during the actual frequency calibration without additional optical setup.
 
 Preconditions
 -------------
 
 The only supported device is the Agilent/[Keysight](https://www.keysight.com/) 53230A Universal Frequency Counter. The very similar 53220A is not useable. The counter must be operated under [specific settings](#counter-settings) which are summarized below.
 
-The input signal must be a sufficiently optimized beat signal between the laser to be tested and an optical frequency comb. The comb should be referenced by a source with high short time (< 1 s) stability. In the author's laboratory an active hydrogen maser works well while a standard Cs clock produces less reliably results. Referencing the comb to a high stability optical frequency is possible, also.
+The input signal must be a sufficiently optimized beat signal between the laser to be tested and an optical frequency comb. The comb should be referenced by a source with good short time (< 1 s) stability. In the author's laboratory an active hydrogen maser works well while a standard Cs clock produces less reliably results. Referencing the comb to a high stability optical frequency is possible, also.
 
-Since version 2.5 this app can also analyse the beat signal between two lasers (i.e. without frequency comb). Provided that the two modulation frequencies differ sufficiently, both modulation widths are evaluated.
+Since version 2.5 this app can also analyse the beat signal between two lasers (i.e. without frequency comb). Provided that the two modulation frequencies differ sufficiently, both modulation widths are evaluated. The app automatically detects which type of signal is present.
 
 The data is recorded by the frequency counter on an external USB flash drive and evaluated offline using this app. A direct interface beween counter and computer is not currently planned.
 
@@ -59,7 +59,7 @@ LaserMod  [options] input-filename [output-filename]
 ```
 LaserMod T10_CCL-K11_FSB_20240904_103049
 ```
-Processes the file T10_CCL-K11_FSB_20240904_103049.csv and when successful, writes the results in file T10_CCL-K11_FSB_20240904_103049.prn in the current working directory. Only the value of the modulation width is displayed. The gate time is interpreted as 10 µs. The time stamp was added to the file name by the counter and is stored as a modified Julian date in the result file.
+Processes the file T10_CCL-K11_FSB_20240904_103049.csv and when successful, writes the results in file T10_CCL-K11_FSB_20240904_103049.prn in the current working directory. Only the value of the modulation width is displayed. The gate time is interpreted as 10 µs. The time stamp was added to the file name by the counter and is stored as a modified Julian date (MJD) in the result file.
 
 ```
 LaserMod -v -n1000 gate5_BEV1d_01 BEV1mod01
@@ -96,11 +96,18 @@ Mathematical background
 
 The mathematical background of the evaluation method is described in the following sections. The actual implementation can be found in the source code.
 
-TBA
+The principle is based on recording the beat frequency at very short and regular intervals. The modulation depth is then derived from this data by fitting it to a sine function. This fitting process occurs in two steps. First, the modulation frequency is determined through Fourier analysis, and this value is fixed (and not changed) for the actual sine fit. This method can be extended analogously to a beat signal between two frequency-modulated lasers. The software automatically detects which of the two scenarios is present.
 
-### Empirical corrections
+An alternative method simply determines the standard deviation of the data for a singly modulated signal (statistical technique). For a purely sinusoidal frequency-modulated signal, the modulation depth is simply the square root of 2 times the standard deviation.
 
-Three empirical corrections are applied to compensate for systematic offsets in the measurement. The actual values of the corrections are determined by calibration measurement with synthetic signals produced by a digital signal generator.
+Both methods are not performed on the entire dataset (usually 1,000,000 points), but rather incrementally on smaller sections (windows).
+
+Finally, a sinc correction compensates for the modulation depth attenuation (aperture effect) caused by the finite gating time.
+
+Empirical corrections
+---------------------
+
+Three empirical corrections are applied to compensate for systematic offsets in the measurement and/or instrument. The actual values of the corrections are determined by calibration measurement with synthetic signals produced by a digital signal generator.
 Respective correction values are stored in the static class `InstrumentConstants` and can be changed by the user if necessary.
 
 #### Totalize correction
@@ -115,10 +122,14 @@ For the statistical technique, the estimated raw peak-to-peak modulation width *
 
 For the least-squares (LSQ) technique, the estimated raw peak-to-peak modulation width *M*pp is corrected by a linear term and a quadratic term of *f*mod, where *f*mod is the modulation frequency.
 
-## Installation
+Installation
+------------
+
 If you do not want to build the application from the source code you can use the released binaries. Just copy the .exe and the .dll files to a directory of your choice. This direcory should be included in the user's PATH variable.
 
-## Dependencies and Acknowledgments
+Dependencies and Acknowledgments
+--------------------------------
+
 * [At.Matus.StatisticPod](https://github.com/matusm/At.Matus.StatisticPod)
 * [Math.NET numerics](https://numerics.mathdotnet.com)
 
